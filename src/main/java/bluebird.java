@@ -1,18 +1,15 @@
-
-
 public class bluebird {
     
-    public static void main(String[] args) {
-        greetHello();
-        greetGoodbye();
+    public bluebird() {
+
     }
 
-    public static void greetHello() {
+    public void greetHello() {
         System.out.println("Hello, I am Bluebird");
         System.out.println("What can I do for you?");
     }
 
-    public static void greetGoodbye() {
+    public void greetGoodbye() {
         System.out.println("Bye");
     }
 }
