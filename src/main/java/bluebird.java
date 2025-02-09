@@ -1,6 +1,6 @@
-public class bluebird {
+public class Bluebird {
     
-    public bluebird() {
+    public Bluebird() {
 
     }
 

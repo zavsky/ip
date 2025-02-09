@@ -16,12 +16,11 @@ public class Main {
     // }
 
     public static void main (String[] args) {
-        bluebird bb = new bluebird();
+        Bluebird bb = new Bluebird();
         bb.greetHello();
 
         while (true) {
-
-            String userInput = scanner.nextLine().trim();
+            String userInput = getUserInput();
             String[] userInputParts = userInput.split(" ", 2);
             String command = userInputParts[0];
             // updateState(userInput);
@@ -29,44 +28,56 @@ public class Main {
             clearScreen();
 
             switch(command) {
-                case "list":
-                case "l":
-                    listTask();
-                    break;
-                case "add":
-                case "a":
-                    if (userInputParts.length > 1) addTask(userInputParts[1]);
-                    else addTask();
-                    break;
-                case "mark":
-                case "m":
-                    if (userInputParts.length > 1) markTask(Integer.parseInt(userInputParts[1]) - 1);
-                    else markTask();
-                    break;
-                case "unmark":
-                case "u":
-                    if (userInputParts.length > 1) unmarkTask(Integer.parseInt(userInputParts[1]) - 1);
-                    else unmarkTask();
-                    break;
-                case "delete":
-                case "d":
-                    if (userInputParts.length > 1) deleteTask(Integer.parseInt(userInputParts[1]) - 1);
-                    else deleteTask();
-                    break;
-                case "undo":
-                case "x":
-                    // implement undo last functionality
-                    break;
-                case "help":
-                case "h":
-                    // implement help string
-                    break;
-                case "exit":
-                case "e":
-                    bb.greetGoodbye();
-                    return;
-                default:
-                    System.out.println("Unknown command. Use list, add, mark, unmark or exit");
+            case "list":
+            case "l":
+                listTask();
+                break;
+            case "add":
+            case "a":
+                if (userInputParts.length > 1) {
+                    addTask(userInputParts[1]);
+                } else {
+                    addTask();
+                }
+                break;
+            case "mark":
+            case "m":
+                if (userInputParts.length > 1) {
+                    markTask(Integer.parseInt(userInputParts[1]) - 1);
+                } else {
+                    markTask();
+                }
+                break;
+            case "unmark":
+            case "u":
+                if (userInputParts.length > 1) {
+                    unmarkTask(Integer.parseInt(userInputParts[1]) - 1);
+                } else {
+                    unmarkTask();
+                }
+                break;
+            case "delete":
+            case "d":
+                if (userInputParts.length > 1) {
+                    deleteTask(Integer.parseInt(userInputParts[1]) - 1);
+                } else {
+                    deleteTask();
+                }
+                break;
+            case "undo":
+            case "x":
+                // implement undo last functionality
+                break;
+            case "help":
+            case "h":
+                // implement help string
+                break;
+            case "exit":
+            case "e":
+                bb.greetGoodbye();
+                return;
+            default:
+                System.out.println("Unknown command. Use list, add, mark, unmark or exit");
             }
         }
     }
@@ -100,27 +111,36 @@ public class Main {
         String command = inputParts[0];
 
         switch (command) {
-            case "deadline":
-            case "d":
-                if (inputParts.length > 1) addDeadline(inputParts[1]);
+        case "deadline":
+        case "d":
+            if (inputParts.length > 1) {
+                addDeadline(inputParts[1]);
+            } else {
                 addDeadline();
-                break;
-            case "todo":
-            case "t":
-                if (inputParts.length > 1) addToDo(inputParts[1]);
+            }
+            break;
+        case "todo":
+        case "t":
+            if (inputParts.length > 1) {
+                addToDo(inputParts[1]);
+            } else {
                 addToDo();
-                break;
-            case "event":
-            case "e":
-                if (inputParts.length > 1) addEvent(inputParts[1]);
+            }
+            break;
+        case "event":
+        case "e":
+            if (inputParts.length > 1) {
+                addEvent(inputParts[1]);
+            } else {
                 addEvent();
-                break;
-            case "exit":
-            case "quit":
-                return;
-            default:
-                System.out.println("Unknown add .. command. Use deadline, todo or event");
-                addTask();
+            }
+            break;
+        case "exit":
+        case "quit":
+            return;
+        default:
+            System.out.println("Unknown add .. command. Use deadline, todo or event");
+            addTask();
         }
         
     }
@@ -191,8 +211,8 @@ public class Main {
         listTask();
         String userInput = getUserInput();
 
-         // check if user has input an integer
-         if (!userInput.matches("-?\\d+")) {
+        // check if user has input an integer
+        if (!userInput.matches("-?\\d+")) {
             System.out.println("Not an integer");
             return;
         }
