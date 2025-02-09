@@ -20,6 +20,7 @@ public class Main {
         bb.greetHello();
 
         while (true) {
+
             String userInput = scanner.nextLine().trim();
             String[] userInputParts = userInput.split(" ", 2);
             String command = userInputParts[0];
@@ -29,24 +30,39 @@ public class Main {
 
             switch(command) {
                 case "list":
+                case "l":
                     listTask();
                     break;
                 case "add":
+                case "a":
                     if (userInputParts.length > 1) addTask(userInputParts[1]);
+                    else addTask();
                     break;
                 case "mark":
+                case "m":
                     if (userInputParts.length > 1) markTask(Integer.parseInt(userInputParts[1]) - 1);
+                    else markTask();
                     break;
                 case "unmark":
+                case "u":
                     if (userInputParts.length > 1) unmarkTask(Integer.parseInt(userInputParts[1]) - 1);
+                    else unmarkTask();
                     break;
                 case "delete":
+                case "d":
                     if (userInputParts.length > 1) deleteTask(Integer.parseInt(userInputParts[1]) - 1);
+                    else deleteTask();
                     break;
                 case "undo":
+                case "x":
                     // implement undo last functionality
                     break;
+                case "help":
+                case "h":
+                    // implement help string
+                    break;
                 case "exit":
+                case "e":
                     bb.greetGoodbye();
                     return;
                 default:
@@ -72,15 +88,122 @@ public class Main {
         printLine();
     }
 
-    public static void addTask(String description) {
-        tasks.add(new Task(description));
+    public static void addTask() {
+        clearScreen();
+        System.out.println("Add deadline, todo or event?");
+        String userInput = scanner.nextLine().trim();
+        addTask(userInput);
+    }
+
+    public static void addTask(String input) {
+        String[] inputParts = input.split(" ", 2);
+        String command = inputParts[0];
+
+        switch (command) {
+            case "deadline":
+            case "d":
+                if (inputParts.length > 1) addDeadline(inputParts[1]);
+                addDeadline();
+                break;
+            case "todo":
+            case "t":
+                if (inputParts.length > 1) addToDo(inputParts[1]);
+                addToDo();
+                break;
+            case "event":
+            case "e":
+                if (inputParts.length > 1) addEvent(inputParts[1]);
+                addEvent();
+                break;
+            case "exit":
+            case "quit":
+                return;
+            default:
+                System.out.println("Unknown add .. command. Use deadline, todo or event");
+                addTask();
+        }
+        
+    }
+
+    private static void addDeadline() {
+        clearScreen();
+        System.out.println("Deadline /by?");
+        String userInput = getUserInput();
+        addDeadline(userInput);
+    }
+
+    private static void addDeadline(String input) {
+        String[] inputParts = input.split("/by", 2);
+        
+        if (inputParts.length < 2) {
+            return;
+        }
+        
+        String description = inputParts[0].trim();
+        String by = inputParts[1].trim();
+
+        Deadline newDeadLine = new Deadline(description, by);
+        tasks.add(newDeadLine);
+        printAddSuccess(newDeadLine);
+    }
+
+    private static void addEvent() {
+        clearScreen();
+        System.out.println("Event /from /to?");
+        String userInput = getUserInput();
+        addEvent(userInput);
+    }
+
+    private static void addEvent(String input) {
+        // improve description, from and to checking, making sure the order is not reversed
+        String[] inputParts = input.split("/from|/to", 3);
+        String description = inputParts[0].trim();
+        String from = inputParts[1].trim();
+        String to = inputParts[2].trim();
+
+        Event newEvent = new Event(description, from, to);
+        tasks.add(newEvent);
+        printAddSuccess(newEvent);
+    }
+
+    private static void addToDo() {
+        clearScreen();
+        System.out.println("Todo?");
+        String userInput = getUserInput();
+        addToDo(userInput);
+    }
+
+    private static void addToDo(String description) {
+        ToDo newToDo = new ToDo(description.trim());
+        tasks.add(newToDo);
+        printAddSuccess(newToDo);
+    }
+
+    private static void printAddSuccess(Task tasks) {
+        clearScreen();
         printLine();
-        System.out.println("    Created task: " + description);
+        System.out.println("    Created " + tasks.getClass().getSimpleName() + ": " + tasks.getDescription());
         printLine();
+    }
+
+    public static void markTask() {
+        System.out.println("Mark which as done?");
+        listTask();
+        String userInput = getUserInput();
+
+         // check if user has input an integer
+         if (!userInput.matches("-?\\d+")) {
+            System.out.println("Not an integer");
+            return;
+        }
+
+        int taskIndex = Integer.parseInt(userInput) - 1;
+        markTask(taskIndex);
     }
 
     public static void markTask(int taskIndex) {
         if (taskIndex >= 0 && taskIndex < tasks.size()) {
+            clearScreen();
             tasks.get(taskIndex).markDone(true);
             printLine();
             System.out.println("    Caw! I've marked the following as done:");
@@ -90,8 +213,24 @@ public class Main {
         }
     }
 
+    public static void unmarkTask() {
+        System.out.println("Mark which as not done?");
+        listTask();
+        String userInput = getUserInput();
+
+        // check if user has input an integer
+        if (!userInput.matches("-?\\d+")) {
+            System.out.println("Not an integer");
+            return;
+        }
+
+        int taskIndex = Integer.parseInt(userInput) - 1;
+        unmarkTask(taskIndex);
+    }
+
     public static void unmarkTask(int taskIndex) {
         if (taskIndex >= 0 && taskIndex < tasks.size()) {
+            clearScreen();
             tasks.get(taskIndex).markDone(false);
             printLine();
             System.out.println("    Stop fooling, seize the day!");
@@ -102,8 +241,24 @@ public class Main {
         }
     }
 
+    public static void deleteTask() {
+        System.out.println("Delete which task?");
+        listTask();
+        String userInput = getUserInput();
+
+        // check if user has input an integer
+        if (!userInput.matches("-?\\d+")) {
+            System.out.println("Not an integer");
+            return;
+        }
+
+        int taskIndex = Integer.parseInt(userInput) - 1;
+        deleteTask(taskIndex);
+    }
+
     public static void deleteTask(int taskIndex) {
         if (taskIndex >= 0 && taskIndex < tasks.size()) {
+            clearScreen();
             printLine();
             System.out.println("    One less item on your bucketlist. The following has been deleted:");
             System.out.println("        " + tasks.get(taskIndex));
@@ -112,6 +267,10 @@ public class Main {
         } else {
             System.out.println("Invalid task number");
         }
+    }
+
+    private static String getUserInput() {
+        return scanner.nextLine().trim();
     }
 
     private static void printLine() {
