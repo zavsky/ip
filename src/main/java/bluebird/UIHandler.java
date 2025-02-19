@@ -30,16 +30,26 @@ public class UIHandler {
         return scanner.nextLine().trim();
     }
 
-    public void displayTasks(List<Task> tasks) {
-        if (tasks.size() == 0) {
+    // public void displayTasks(List<Task> tasks) {
+    //     if (tasks.size() == 0) {
+    //         System.out.println("You have no tasks!");
+    //         return;
+    //     }
+    //     printLine();
+    //     System.out.println("\tHere's your todo:");
+    //     for (int i = 0; i < tasks.size(); i++) {
+    //         System.out.printf("\t\t%d. %s%n", i + 1, tasks.get(i));
+    //     }
+    //     printLine();
+    // }
+
+    public void displayPrintableTasks(String taskString) {
+        if (taskString.isEmpty()) {
             System.out.println("You have no tasks!");
             return;
         }
         printLine();
-        System.out.println("\tHere's your todo:");
-        for (int i = 0; i < tasks.size(); i++) {
-            System.out.printf("\t\t%d. %s%n", i + 1, tasks.get(i));
-        }
+        System.out.print("\tHere's your todo:\n" + taskString);
         printLine();
     }
 

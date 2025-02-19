@@ -32,7 +32,7 @@ public class AddCommand extends Command {
             taskManager.addTask(task);
             ui.showSuccess("Added task: " + task.getDescription());
         } catch (IllegalTaskParameterException e) {
-            ui.showError("Task params are incorrect");
+            ui.showError("Task params for adding '" + taskType + "' are incorrect");
         }
         return false;
     }

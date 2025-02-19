@@ -29,4 +29,8 @@ public class Event extends Task {
     public String toString() {
         return "[E] " + super.toString() + " (from: " + from + " to: " + to + ")";
     }
+
+    public String undoCommand() {
+        return "e " + description + " /f " + from + " /to " + to;
+    }
 }

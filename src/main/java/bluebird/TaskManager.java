@@ -22,13 +22,37 @@ public class TaskManager {
         tasks.remove(index);
     }
 
-    public List<Task> getTasks() {
-        return Collections.unmodifiableList(tasks);
+    // public List<Task> getTasks() {
+    //     return Collections.unmodifiableList(tasks);
+    // }
+
+    public String getPrintableTasks() {
+        String taskString = "";
+        for (int i = 0; i < tasks.size(); i++) {
+            taskString = taskString + "\t\t" + (i+1) + ". " + tasks.get(i) + System.lineSeparator();
+        }
+        return taskString;
+    }
+
+    public int getTaskCount() {
+        return tasks.size();
+    }
+
+    public String getUndoCommand(int index) {
+        return tasks.get(index).undoCommand();
+    }
+
+    public String getTaskDescription(int index) {
+        return tasks.get(index).getDescription();
     }
 
     private void validateIndex(int index) {
         if (index < 0 || index >= tasks.size()) {
             //throw error
         }
+    }
+
+    public boolean isEmpty() {
+        return tasks.size() == 0;
     }
 }
