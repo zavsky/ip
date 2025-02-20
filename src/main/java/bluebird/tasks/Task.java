@@ -28,4 +28,8 @@ public class Task {
     public String undoCommand() {
         return "";
     }
+
+    public String toWritable() {
+        return "";
+    }
 }

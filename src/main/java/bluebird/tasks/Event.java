@@ -33,4 +33,8 @@ public class Event extends Task {
     public String undoCommand() {
         return "e " + description + " /f " + from + " /to " + to;
     }
+    
+    public String toWritable() {
+        return "E | " + (isDone ? 1 : 0) + " | " + description + " | " + from + " | " + to + "\n";
+    }
 }

@@ -67,4 +67,37 @@ public class TaskFactory {
         String to = parts[2].trim();
         return new Event(description, from, to);
     }
+
+    public static Task createTaskFromFileString(String fileString) {
+        String[] parts = fileString.split(" \\| ");
+        if (parts.length < 3) {
+            return null;
+        }
+
+        String taskType = parts[0];
+        boolean isDone = parts[1].equals("1");
+        String description = parts[2];
+
+        switch (taskType) {
+        case "T":
+            ToDo todo = new ToDo(description);
+            todo.markDone(isDone);
+            return todo;
+        case "E":
+            if (parts.length < 5) {
+                return null;
+            }
+            Event event = new Event(description, parts[3], parts[4]);
+            event.markDone(isDone);
+            return event;
+        case "D":
+            if (parts.length < 4) {
+                return null;
+            }
+            Deadline deadline = new Deadline(description, parts[3]);
+            deadline.markDone(isDone);
+            return deadline;
+        default: return null;
+        }
+    }
 }

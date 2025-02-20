@@ -23,4 +23,8 @@ public class Deadline extends Task {
     public String undoCommand() {
         return "d " + description + " /b " + by;
     }
+    
+    public String toWritable() {
+        return "D | " + (isDone ? 1 : 0) + " | " + description + " | " + by + "\n";
+    }
 }
