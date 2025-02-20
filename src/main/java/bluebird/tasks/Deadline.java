@@ -19,4 +19,8 @@ public class Deadline extends Task {
     public String toString() {
         return "[D] " + super.toString() + " (by: " + by + ")";
     }
+
+    public String toWritable() {
+        return "D | " + (isDone ? 1 : 0) + " | " + description + " | " + by + "\n";
+    }
 }
