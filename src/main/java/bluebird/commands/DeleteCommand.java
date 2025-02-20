@@ -22,9 +22,9 @@ public class DeleteCommand extends Command {
      */
     @Override
     public boolean execute() {
-        Task deletedTask = taskManager.getTasks().get(taskIndex);
+        String deletedTask = taskManager.getTaskDescription(taskIndex);
         taskManager.deleteTask(taskIndex);
-        ui.showSuccess("Deleted task: " + deletedTask.getDescription());
+        ui.showSuccess("Deleted task: " + deletedTask);
         return false;
     }
 }

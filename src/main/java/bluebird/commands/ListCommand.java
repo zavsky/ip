@@ -18,7 +18,8 @@ public class ListCommand extends Command {
      */
     @Override
     public boolean execute() {
-        ui.displayTasks(taskManager.getTasks());
+        // ui.displayTasks(taskManager.getTasks());
+        ui.displayPrintableTasks(taskManager.getPrintableTasks());
         return false;
     }
 }
