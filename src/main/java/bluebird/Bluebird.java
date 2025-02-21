@@ -5,26 +5,31 @@ import java.security.SecureRandom;
 public class Bluebird {
     private static final SecureRandom random = new SecureRandom();
     
-    public Bluebird() {
+    public Bluebird() {}
 
+    public String greetHello() {
+        return "Hello, I am Bluebird\n" + 
+            "What can I do for you?\n\n";
     }
 
-    public void greetHello() {
-        clearScreen();
-        System.out.println("Hello, I am Bluebird");
-        System.out.println("What can I do for you?");
-        System.out.println("");
+    public String scream() {
+        return "CAWWW\n";
     }
 
-    public void greetGoodbye() {
-        clearScreen();
-        System.out.println("CAWWW");
-        System.out.println("");
+    public String curse() {
+        return "Oh my, either the density levels are off the charts or my reading comprehension is getting worse\n";
     }
 
-    public void clearScreen() {
-        System.out.print("\033[H\033[2J");  
-        System.out.flush();  
+    public String enthusiastic() {
+        return "Until next time...\n";
+    }
+
+    public String confused() {
+        return "I don't quite get you... gotta speak clearer\n";
+    }
+
+    public String helpless() {
+        return "I cannot do that...";
     }
 
     /**

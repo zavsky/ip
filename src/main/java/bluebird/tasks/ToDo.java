@@ -9,10 +9,6 @@ public class ToDo extends Task {
     public String toString() {
         return "[T] " + super.toString();
     }
-
-    public String undoCommand() {
-        return "t " + description;
-    }
     
     public String toWritable() {
         return "T | " + (isDone ? 1 : 0) + " | " + description + "\n";

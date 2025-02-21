@@ -1,6 +1,5 @@
 package bluebird;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import bluebird.tasks.Task;
@@ -8,26 +7,69 @@ import bluebird.tasks.Task;
 public class TaskManager {
     private final ArrayList<Task> tasks = new ArrayList<>();
     private final Storage storage = new Storage();
+    private Task lastModifiedTask = null;
+    private CommandType undoCommand = null;
 
     public TaskManager() {
         loadTasks();
     }
 
-    public void addTask(Task task) {
+    private enum CommandType {
+        ADD,
+        MARK,
+        UNMARK,
+        DELETE
+    }
+
+    public String addTask(Task task) {
         tasks.add(task);
+        lastModifiedTask = task;
+        undoCommand = CommandType.DELETE;
         storage.saveTasks(getWritableTaskString());
+        return "Added task: " + lastModifiedTask.getDescription();
     }
 
-    public void markTask(int index, boolean isDone) {
-        validateIndex(index);
-        tasks.get(index).markDone(isDone);
-        storage.saveTasks(getWritableTaskString());
+    public String markTask(int index, boolean isDone) {
+        return markTask(tasks.get(index), isDone);
     }
 
-    public void deleteTask(int index) {
-        validateIndex(index);
-        tasks.remove(index);
+    public String markTask(Task task, boolean isDone) {
+        task.markDone(isDone);
+        lastModifiedTask = task;
+        undoCommand = isDone ? CommandType.UNMARK : CommandType.MARK;
         storage.saveTasks(getWritableTaskString());
+        return "Task " + (tasks.indexOf(lastModifiedTask) + 1) + 
+            (isDone ? " has been marked as done" : " has been marked as not done");
+    }
+
+    public String deleteTask(int index) {
+        lastModifiedTask = tasks.remove(index);
+        undoCommand = CommandType.ADD;
+        storage.saveTasks(getWritableTaskString());
+        return "Deleted task: " + lastModifiedTask.getDescription();
+    }
+
+    public String deleteTask(Task task) {
+        return deleteTask(tasks.indexOf(task));
+    }
+
+    public String undoCommand() {
+        if (lastModifiedTask == null || undoCommand == null) {
+            return "Nothing to undo, sad";
+        }
+
+        switch (undoCommand) {
+        case ADD:
+            return addTask(lastModifiedTask);
+        case MARK:
+            return markTask(lastModifiedTask, true);
+        case UNMARK:
+            return markTask(lastModifiedTask, false);
+        case DELETE:
+            return deleteTask(lastModifiedTask);
+        default:
+            return "What am I doing here??? Check my code...";
+        }
     }
 
     private void loadTasks() {
@@ -39,10 +81,6 @@ public class TaskManager {
             }
         }
     }
-
-    // public List<Task> getTasks() {
-    //     return Collections.unmodifiableList(tasks);
-    // }
 
     public String getPrintableTasks() {
         String taskString = "";
@@ -56,12 +94,12 @@ public class TaskManager {
         return tasks.size();
     }
 
-    public String getUndoCommand(int index) {
-        return tasks.get(index).undoCommand();
-    }
-
     public String getTaskDescription(int index) {
         return tasks.get(index).getDescription();
+    }
+
+    public String getTaskType(int index) {
+        return tasks.get(index).getTaskType();
     }
 
     public String getWritableTaskString() {
@@ -70,12 +108,6 @@ public class TaskManager {
             writableTask = writableTask + t.toWritable();
         }
         return writableTask;
-    }
-
-    private void validateIndex(int index) {
-        if (index < 0 || index >= tasks.size()) {
-            //throw error
-        }
     }
 
     public boolean isEmpty() {

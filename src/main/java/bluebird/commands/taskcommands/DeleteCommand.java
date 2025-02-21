@@ -1,17 +1,13 @@
-package bluebird.commands;
+package bluebird.commands.taskcommands;
 
 import bluebird.TaskManager;
-import bluebird.UIHandler;
-import bluebird.tasks.Task;
 
-public class DeleteCommand extends Command {
+public class DeleteCommand extends TaskCommand {
     private final TaskManager taskManager;
-    private final UIHandler ui;
     private final int taskIndex;
     
-    public DeleteCommand(TaskManager taskManager, UIHandler ui, int taskIndex) {
+    public DeleteCommand(TaskManager taskManager, int taskIndex) {
         this.taskManager = taskManager;
-        this.ui = ui;
         this.taskIndex = taskIndex;
     }
 
@@ -22,9 +18,12 @@ public class DeleteCommand extends Command {
      */
     @Override
     public boolean execute() {
-        String deletedTask = taskManager.getTaskDescription(taskIndex);
-        taskManager.deleteTask(taskIndex);
-        ui.showSuccess("Deleted task: " + deletedTask);
+        commandFeedback = taskManager.deleteTask(taskIndex);
         return false;
+    }
+
+    @Override
+    public String showHelpString() {
+        return "Syntax:\ndelete task_number"; // implement THIS
     }
 }

@@ -1,27 +1,43 @@
 package bluebird;
-import java.util.List;
 import java.util.Scanner;
-
-import bluebird.tasks.Task;
 
 public class UIHandler {
     private final Scanner scanner = new Scanner(System.in);
-    
-    public void showError(String message) {
-        printLine();
-        System.out.println("\tERROR:\t" + message);
-        printLine();
-    }
-
-    public void showSuccess(String message) {
-        printLine();
-        System.out.println("\t" + message);
-        printLine();
-    }
+    private final Bluebird bb = new Bluebird();
 
     public void showMessage(String message) {
+        showMessage(MessageType.INFO, message);
+    }
+    
+    public void showMessage(MessageType type, String message) {
+        String messageFormat;
+        
+        switch (type) {
+        case ERROR:
+            messageFormat = "\t" + bb.curse() + "\tERROR:\t";
+            break;
+        case SUCCESS:
+            messageFormat = "\t" + bb.scream() + "\n\t";
+            break;
+        case SHOWTASK:
+            messageFormat = "\tHere's your todo:\n\n";
+            break;
+        case MARK:
+            messageFormat = "\tSelect task to mark:\n\n";
+            break;
+        case UNMARK:
+            messageFormat = "\tSelect task to unmark:\n\n";
+            break;
+        case DELETE:
+            messageFormat = "\tSelect task to delete:\n\n";
+            break;
+        case INFO:
+        default:
+            messageFormat = "";
+        }
+
         printLine();
-        System.out.println(message);
+        System.out.println(messageFormat + message);
         printLine();
     }
 
@@ -30,31 +46,47 @@ public class UIHandler {
         return scanner.nextLine().trim();
     }
 
-    // public void displayTasks(List<Task> tasks) {
-    //     if (tasks.size() == 0) {
-    //         System.out.println("You have no tasks!");
-    //         return;
-    //     }
-    //     printLine();
-    //     System.out.println("\tHere's your todo:");
-    //     for (int i = 0; i < tasks.size(); i++) {
-    //         System.out.printf("\t\t%d. %s%n", i + 1, tasks.get(i));
-    //     }
-    //     printLine();
-    // }
+    public void showHello() {
+        clearScreen();
+        System.out.println(bb.greetHello());
+    }
 
-    public void displayPrintableTasks(String taskString) {
+    public void showGoodbye() {
+        clearScreen();
+        System.out.println(bb.enthusiastic());
+    }
+
+    public void showConfused() {
+        System.out.println(bb.confused());
+    }
+
+    public void showHelpless() {
+        System.out.println(bb.helpless());
+    }
+
+    public void showTasks(String taskString) {
         if (taskString.isEmpty()) {
-            System.out.println("You have no tasks!");
-            return;
+            showMessage("You have no tasks!");
+        } else {
+            showMessage(MessageType.SHOWTASK, taskString);
         }
-        printLine();
-        System.out.print("\tHere's your todo:\n" + taskString);
-        printLine();
+    }
+
+    public void showTasks(String taskString, MessageType messageType) {
+        if (taskString.isEmpty()) {
+            showMessage("You have no tasks!");
+        } else {
+            showMessage(messageType, taskString);
+        }
     }
 
     private static void printLine() {
-        System.out.println("\t____________________________________________________________");
-        System.out.println("");
+        System.out.println("\t::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::" + 
+            System.lineSeparator());
+    }
+
+    public void clearScreen() {
+        System.out.print("\033[H\033[2J");  
+        System.out.flush();  
     }
 }

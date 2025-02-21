@@ -1,17 +1,14 @@
-package bluebird.commands;
+package bluebird.commands.taskcommands;
 
 import bluebird.TaskManager;
-import bluebird.UIHandler;
 
-public class MarkCommand extends Command {
+public class MarkCommand extends TaskCommand {
     private final TaskManager taskManager;
-    private final UIHandler ui;
     private final int taskIndex;
     private final boolean markAsDone;
 
-    public MarkCommand(TaskManager taskManager, UIHandler ui, int taskIndex, boolean markAsDone) {
+    public MarkCommand(TaskManager taskManager, int taskIndex, boolean markAsDone) {
         this.taskManager = taskManager;
-        this.ui = ui;
         this.taskIndex = taskIndex;
         this.markAsDone = markAsDone;
     }
@@ -23,9 +20,12 @@ public class MarkCommand extends Command {
      */
     @Override
     public boolean execute() {
-        taskManager.markTask(taskIndex, markAsDone);
-        String status = markAsDone ? "marked as done" : "marked as not done";
-        ui.showSuccess("Task " + (taskIndex + 1) + " has been " + status);
+        commandFeedback = taskManager.markTask(taskIndex, markAsDone);
         return false;
+    }
+
+    @Override
+    public String showHelpString() {
+        return "Syntax:\nmark task_number\nunmark task_number"; // implement THIS
     }
 }

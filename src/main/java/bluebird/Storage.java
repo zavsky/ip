@@ -46,8 +46,8 @@ public class Storage {
             if (!f.exists()) {
                 f.createNewFile();
             }
-        } catch (IOException e1) {
-            System.err.println("Error creating file: " + e1.getMessage());
+        } catch (IOException e) {
+            System.err.println("Error creating file: " + e.getMessage());
         }
     }
 

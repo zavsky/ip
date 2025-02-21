@@ -12,6 +12,10 @@ public class Task {
         return this.description;
     }
 
+    public String getTaskType() {
+        return this.getClass().toString().toLowerCase();
+    }
+
     public void markDone(boolean isDone) {
         this.isDone = isDone;
     }
@@ -23,10 +27,6 @@ public class Task {
     @Override
     public String toString() {
         return getStatusIcon() + " " + description;
-    }
-
-    public String undoCommand() {
-        return "";
     }
 
     public String toWritable() {
