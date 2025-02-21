@@ -12,9 +12,10 @@ public class Main {
         Storage storage = new Storage();
         storage.ensureFileExists();
         
-        TaskManager TaskManager = new TaskManager();
+        TaskManager taskManager = new TaskManager();
         UIHandler ui = new UIHandler();
-        CommandParser parser = new CommandParser(TaskManager, ui);
+        TaskFactory taskFactory = new TaskFactory(ui);
+        CommandParser parser = new CommandParser(taskManager, taskFactory, ui);
         ui.showHello();
 
         while (true) {
@@ -48,7 +49,7 @@ public class Main {
                 }
 
             } catch (IllegalTaskParameterException e) {
-                ui.showMessage(MessageType.ERROR, "One or more parameters for adding task is incorrect");
+                ui.showMessage(MessageType.INFO, "Task is not added\n");
             }
         }
     }

@@ -2,15 +2,16 @@ package bluebird.commands.taskcommands;
 
 import bluebird.TaskFactory;
 import bluebird.TaskManager;
+import bluebird.commands.Command;
 import bluebird.exceptions.IllegalTaskParameterException;
 import bluebird.tasks.Task;
 
-public class AddCommand extends TaskCommand {
+public class AddCommand extends Command implements TaskCommand {
     private final TaskManager taskManager;
     private final String taskType;
     private final String details;
 
-    public AddCommand(TaskManager taskManager, String taskType, String details) {
+    public AddCommand(TaskManager taskManager, TaskFactory taskFactory, String taskType, String details) {
         this.taskManager = taskManager;
         this.taskType = taskType;
         this.details = details;

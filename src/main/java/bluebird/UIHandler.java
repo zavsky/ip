@@ -1,6 +1,8 @@
 package bluebird;
 import java.util.Scanner;
 
+import bluebird.exceptions.IllegalTaskParameterException;
+
 public class UIHandler {
     private final Scanner scanner = new Scanner(System.in);
     private final Bluebird bb = new Bluebird();
@@ -33,7 +35,7 @@ public class UIHandler {
             break;
         case INFO:
         default:
-            messageFormat = "";
+            messageFormat = "\t";
         }
 
         printLine();
@@ -88,5 +90,25 @@ public class UIHandler {
     public void clearScreen() {
         System.out.print("\033[H\033[2J");  
         System.out.flush();  
+    }
+
+    /**
+     * 
+     * @param queryString
+     * @return trimmed user input if not empty
+     * @throws IllegalTaskParameterException
+     */
+    public String promptUser(String queryString) throws IllegalTaskParameterException {
+        clearScreen();
+        String userResponse = getUserInput(queryString).trim();
+        if (!userResponse.isEmpty()) {
+            return userResponse;
+        }
+        userResponse = getUserInput("Do you want to leave this field empty? y/N  ");
+        
+        if (userResponse.equalsIgnoreCase("y")) {
+            return "?";
+        }
+        throw new IllegalTaskParameterException();
     }
 }

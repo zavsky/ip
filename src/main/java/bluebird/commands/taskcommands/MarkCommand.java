@@ -1,8 +1,9 @@
 package bluebird.commands.taskcommands;
 
 import bluebird.TaskManager;
+import bluebird.commands.Command;
 
-public class MarkCommand extends TaskCommand {
+public class MarkCommand extends Command implements TaskCommand {
     private final TaskManager taskManager;
     private final int taskIndex;
     private final boolean markAsDone;

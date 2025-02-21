@@ -1,8 +1,11 @@
 package bluebird.commands.taskcommands;
 
-import bluebird.TaskManager;
+import java.util.ArrayList;
 
-public class DeleteCommand extends TaskCommand {
+import bluebird.TaskManager;
+import bluebird.commands.Command;
+
+public class DeleteCommand extends Command implements TaskCommand {
     private final TaskManager taskManager;
     private final int taskIndex;
     

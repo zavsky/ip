@@ -1,9 +1,5 @@
 package bluebird.commands.taskcommands;
 
-import bluebird.commands.Command;
-
-public abstract class TaskCommand extends Command {
-    public String showHelpString() {
-        return "";
-    }
+public interface TaskCommand {
+    public String showHelpString();    
 }

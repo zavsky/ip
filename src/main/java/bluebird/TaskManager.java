@@ -26,7 +26,7 @@ public class TaskManager {
         lastModifiedTask = task;
         undoCommand = CommandType.DELETE;
         storage.saveTasks(getWritableTaskString());
-        return "Added task: " + lastModifiedTask.getDescription();
+        return "Added task: " + lastModifiedTask.getDescription() + "\n";
     }
 
     public String markTask(int index, boolean isDone) {
@@ -39,14 +39,14 @@ public class TaskManager {
         undoCommand = isDone ? CommandType.UNMARK : CommandType.MARK;
         storage.saveTasks(getWritableTaskString());
         return "Task " + (tasks.indexOf(lastModifiedTask) + 1) + 
-            (isDone ? " has been marked as done" : " has been marked as not done");
+            (isDone ? " has been marked as done" : " has been marked as not done") + "\n";
     }
 
     public String deleteTask(int index) {
         lastModifiedTask = tasks.remove(index);
         undoCommand = CommandType.ADD;
         storage.saveTasks(getWritableTaskString());
-        return "Deleted task: " + lastModifiedTask.getDescription();
+        return "Deleted task: " + lastModifiedTask.getDescription() + "\n";
     }
 
     public String deleteTask(Task task) {
@@ -55,7 +55,7 @@ public class TaskManager {
 
     public String undoCommand() {
         if (lastModifiedTask == null || undoCommand == null) {
-            return "Nothing to undo, sad";
+            return "Nothing to undo, sad\n";
         }
 
         switch (undoCommand) {

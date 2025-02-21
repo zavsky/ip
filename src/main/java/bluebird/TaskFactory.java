@@ -4,6 +4,14 @@ import bluebird.exceptions.IllegalTaskParameterException;
 import bluebird.tasks.*;
 
 public class TaskFactory {
+    private static UIHandler ui;
+    private static final String REGEX_DEADLINE_STRING = "/by|/b";
+    private static final String REGEX_EVENT_STRING = "((?=/from)|(?=/f)|(?=/to)|(?=/t))";
+    private static final String REGEX_EVENT_NODELIM_STRING = "/from|/f|/to|/t";
+
+    public TaskFactory(UIHandler ui) {
+        TaskFactory.ui = ui;
+    }
     /**
      * @throws IllegalTaskParameterException 
      * 
@@ -23,7 +31,7 @@ public class TaskFactory {
             throw new IllegalTaskParameterException();
         }
     }
-
+            
     private static ToDo createToDo(String description) throws IllegalTaskParameterException {
         if (description.trim().isEmpty()) {
             throw new IllegalTaskParameterException();
@@ -31,40 +39,52 @@ public class TaskFactory {
         return new ToDo(description);
     }
 
+    /**
+     * 
+     * @param details must not be empty or null String
+     * @return
+     * @throws IllegalTaskParameterException
+     */
     private static Deadline createDeadline(String details) throws IllegalTaskParameterException {
-        String[] parts = details.split("/by|/b", 2);
+        String[] parts = details.split(REGEX_DEADLINE_STRING, 2);
+        String by, description = parts[0].trim();
 
         if (parts.length < 2) {
-            // throw exception
-            throw new IllegalTaskParameterException();
+            by = ui.promptUser(description + "\nWhen is this due? Don't include /by here\n");
+        } else {
+            by = parts[1].trim();
         }
-
-        String description = parts[0].trim();
-
-        if (description.trim().isEmpty()) {
-            throw new IllegalTaskParameterException();
-        }
-
-        String by = parts[1].trim();
         return new Deadline(description, by);
     }
 
     private static Event createEvent(String details) throws IllegalTaskParameterException {
-        String[] parts = details.split("/from|/to|/f|/t", 3);
-        
-        if (parts.length < 3) {
-            // throw exception
-            throw new IllegalTaskParameterException();
-        }
-
+        String[] parts = details.split(REGEX_EVENT_STRING, 3);
+        String from = "", to = "";
         String description = parts[0].trim();
+        
+        if (parts.length == 1) {
+            from = ui.promptUser(description + "\nWhen does this begin? Don't include /from here\n");
+            to = ui.promptUser(description + "\nWhen will this end? Don't include /to here\n");
+        } else if (parts.length == 2) {
+            String[] partsNoDelim = details.split(REGEX_EVENT_NODELIM_STRING, 2);
+            if (parts[1].contains("/f")) {
+                from = partsNoDelim[1].trim();
+                to = ui.promptUser(description + "\nWhen will this end? Don't include /to here\n");
+            } else {
+                from = ui.promptUser(description + "\nWhen does this begin? Don't include /from here\n");
+                to = partsNoDelim[1].trim();
+            }
+        } else {
+            String[] partsNoDelim = details.split(REGEX_EVENT_NODELIM_STRING, 3);
 
-        if (description.trim().isEmpty()) {
-            throw new IllegalTaskParameterException();
+            if (parts[1].contains("/f")) {
+                from = partsNoDelim[1].trim();
+                to = partsNoDelim[2].trim();
+            } else {
+                from = partsNoDelim[2].trim();
+                to = partsNoDelim[1].trim();
+            }
         }
-
-        String from = parts[1].trim();
-        String to = parts[2].trim();
         return new Event(description, from, to);
     }
 
