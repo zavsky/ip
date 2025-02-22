@@ -32,7 +32,6 @@ public class AddCommand extends Command implements TaskCommand {
         return false;
     }
 
-    @Override
     public String showHelpString() {
         return "Syntax:\nadd deadline/event/todo task_details"; // implement THIS better
     }

@@ -5,26 +5,25 @@ import bluebird.commands.Command;
 
 public class DeleteCommand extends Command implements TaskCommand {
     private final TaskManager taskManager;
-    private final int taskIndex;
+    private final int[] taskIndices;
     
-    public DeleteCommand(TaskManager taskManager, int taskIndex) {
+    public DeleteCommand(TaskManager taskManager, int[] taskIndices) {
         this.taskManager = taskManager;
-        this.taskIndex = taskIndex;
+        this.taskIndices = taskIndices;
     }
 
     /**
-     * Deletes a task via TaskManager using user-specified index.
+     * Deletes multiple tasks via TaskManager using user-specified indices.
      * Adds a message to the @attribute commandFeedback if successful.
      * @return false to signal that the program should not end.
      */
     @Override
     public boolean execute() {
-        commandFeedback = taskManager.deleteTask(taskIndex);
+        commandFeedback = taskManager.deleteTask(taskIndices);
         return false;
     }
 
-    @Override
     public String showHelpString() {
-        return "Syntax:\ndelete task_number"; // implement THIS
+        return "Syntax:\ndelete task_number [task_number ...]"; // implement THIS
     }
 }

@@ -1,5 +1,7 @@
 package bluebird;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -114,99 +116,109 @@ public class CommandParser {
         if (taskManager.isEmpty()) {
             return null;
         }
+
         String args = arguments;
         if (args.isEmpty()) {
             ui.showTasks(taskManager.getPrintableTasks(), (markAsDone ? MessageType.MARK : MessageType.UNMARK));
-            args = ui.getUserInput("Enter task number: ").trim();
+
+            args = ui.getUserInput("Enter task numbers to delete (separated by spaces): ").trim();
         }
         if (args.isEmpty()) {
             return null;
         }
-        int taskIndex = parseTaskIndex(args);
-        if (taskIndex == -1) {
-            ui.showMessage(MessageType.ERROR, "Index to mark does not make sense");
+
+        int[] taskIndices = parseTaskIndices(args);
+        if (taskIndices == null || taskIndices.length == 0) {
+            ui.showMessage(MessageType.ERROR, "Invalid indices for deletion");
             return new EmptyCommand();
         }
-        return new MarkCommand(taskManager, taskIndex, markAsDone);
+
+        return new MarkCommand(taskManager, taskIndices, markAsDone);
     }
 
     private Command parseDeleteCommand(String arguments) {
         if (taskManager.isEmpty()) {
             return null;
         }
+        
         String args = arguments;
         if (args.isEmpty()) {
             ui.showTasks(taskManager.getPrintableTasks(), MessageType.DELETE);
-            args = ui.getUserInput("Enter task number to delete: ").trim();
+            
+            args = ui.getUserInput("Enter task numbers to delete (separated by spaces): ").trim();
         }
         if (args.isEmpty()) {
             return null;
         }
-        int taskIndex = parseTaskIndex(args);
-        if (taskIndex == -1) {
-            ui.showMessage(MessageType.ERROR, "Index for deletion does not make sense");
+
+        // Parse the input into an array of integers
+        int[] taskIndices = parseTaskIndices(args);
+        if (taskIndices == null || taskIndices.length == 0) {
+            ui.showMessage(MessageType.ERROR, "Invalid indices for deletion");
             return new EmptyCommand();
         }
-        return new DeleteCommand(taskManager, taskIndex);
+
+        return new DeleteCommand(taskManager, taskIndices);
     }
 
     // private Command parseDeleteCommand(String arguments) {
     //     if (taskManager.isEmpty()) {
     //         return null;
     //     }
-        
     //     String args = arguments;
     //     if (args.isEmpty()) {
     //         ui.showTasks(taskManager.getPrintableTasks(), MessageType.DELETE);
-            
-    //         args = ui.getUserInput("Enter task numbers to delete (separated by spaces): ").trim();
+    //         args = ui.getUserInput("Enter task number to delete: ").trim();
     //     }
     //     if (args.isEmpty()) {
     //         return null;
     //     }
-
-    //     // Parse the input into an array of integers
-    //     int[] taskIndices = parseTaskIndices(args);
-    //     if (taskIndices == null || taskIndices.length == 0) {
-    //         ui.showMessage(MessageType.ERROR, "Invalid indices for deletion");
+    //     int taskIndex = parseTaskIndex(args);
+    //     if (taskIndex == -1) {
+    //         ui.showMessage(MessageType.ERROR, "Index for deletion does not make sense");
     //         return new EmptyCommand();
     //     }
-
-    //     return new DeleteCommand(taskManager, taskIndices);
+    //     return new DeleteCommand(taskManager, taskIndex);
     // }
 
-    private int parseTaskIndex(String input) {
-        try {
-            int index = Integer.parseInt(input.trim()) - 1;
-            // check index within bounds
-            if (index >= 0 && index < taskManager.getTaskCount()) {
-                return index;
-            }
-        } catch (NumberFormatException e) {
-            // invalid number format
-        }
-        return -1;
-    }
+    // private int parseTaskIndex(String input) {
+    //     try {
+    //         int index = Integer.parseInt(input.trim()) - 1;
+    //         // check index within bounds
+    //         if (index >= 0 && index < taskManager.getTaskCount()) {
+    //             return index;
+    //         }
+    //     } catch (NumberFormatException e) {
+    //         // invalid number format
+    //     }
+    //     return -1;
+    // }
 
     /**
      * Parses a string of space-separated integers into an array of integers.
      * Returns null if any part of the input is invalid.
      */
-    // private int[] parseTaskIndices(String input) {
-    //     String[] parts = input.split("\\s+"); // Split by spaces
-    //     int[] indices = new int[parts.length];
-    //     try {
-    //         for (int i = 0; i < parts.length; i++) {
-    //             indices[i] = Integer.parseInt(parts[i].trim());
-    //             // Validate that the index is non-negative
-    //             if (indices[i] < 0) {
-    //                 return null;
-    //             }
-    //         }
-    //         return indices;
-    //     } catch (NumberFormatException e) {
-    //         // If any part of the input is not a valid integer, return null
-    //         return null;
-    //     }
-    // }
+    private int[] parseTaskIndices(String input) {
+        String[] parts = input.split("\\s+"); // Split by spaces
+        Integer[] indices = new Integer[parts.length];
+        try {
+            for (int i = 0; i < parts.length; i++) {
+                int index = Integer.parseInt(parts[i].trim()) - 1;
+                // Validate that the index is non-negative
+                if (index < 0) {
+                    return null;
+                }
+                // Check index is within range
+                if (index < 0 || index >= taskManager.getTaskCount()) {
+                    return null;
+                }
+                indices[i] = index;
+            }
+            Arrays.sort(indices, Collections.reverseOrder());
+            return Arrays.stream(indices).mapToInt(Integer::intValue).toArray();
+        } catch (NumberFormatException e) {
+            // If any part of the input is not a valid integer, return null
+            return null;
+        }
+    }
 }

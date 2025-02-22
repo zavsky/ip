@@ -7,66 +7,132 @@ import bluebird.tasks.Task;
 public class TaskManager {
     private final ArrayList<Task> tasks = new ArrayList<>();
     private final Storage storage = new Storage();
-    private Task lastModifiedTask = null;
+    private Task[] lastModifiedTasks = null;
     private CommandType undoCommand = null;
 
     public TaskManager() {
         loadTasks();
     }
 
-    private enum CommandType {
-        ADD,
-        MARK,
-        UNMARK,
-        DELETE
-    }
-
     public String addTask(Task task) {
         tasks.add(task);
-        lastModifiedTask = task;
+        lastModifiedTasks = new Task[] {task};
         undoCommand = CommandType.DELETE;
+
         storage.saveTasks(getWritableTaskString());
-        return "Added task: " + lastModifiedTask.getDescription();
+        return "Added task: " + task.getDescription();
     }
 
-    public String markTask(int index, boolean isDone) {
-        return markTask(tasks.get(index), isDone);
-    }
+    private String addTask(Task[] taskArray) {
+        StringBuilder feedback = new StringBuilder();
+        feedback.append("Added task" + (taskArray.length == 1 ? "" : "s") + ":\n");
+        lastModifiedTasks = new Task[taskArray.length];
+        undoCommand = CommandType.DELETE;
+        int i = 0;
+        for (Task task : taskArray) {
+            tasks.add(task);
+            lastModifiedTasks[i] = task;
+            feedback.append("\t\t" + task.getDescription()).append("\n");
+            i++;
+        }
 
-    public String markTask(Task task, boolean isDone) {
-        task.markDone(isDone);
-        lastModifiedTask = task;
+        storage.saveTasks(getWritableTaskString());
+        return feedback.toString().trim();
+    } 
+
+    public String markTask(int[] indices, boolean isDone) {
+        StringBuilder feedback = new StringBuilder();
+        feedback.append("Task" + (indices.length == 1 ? " " : "s "));
+        lastModifiedTasks = new Task[indices.length];
         undoCommand = isDone ? CommandType.UNMARK : CommandType.MARK;
+        int i = 0;
+        for (int index : indices) {
+            tasks.get(index).markDone(isDone);
+            lastModifiedTasks[i] = tasks.get(index);
+            feedback.append(index + 1);
+            if (i != indices.length - 1) {
+                feedback.append(", ");
+            } else {
+                feedback.append(" ");
+            }
+            i++;
+        }
+        feedback.append((isDone ? "has been marked as done" : "has been marked as not done"));
+
         storage.saveTasks(getWritableTaskString());
-        return "Task " + (tasks.indexOf(lastModifiedTask) + 1) + 
-            (isDone ? " has been marked as done" : " has been marked as not done");
+        return feedback.toString().trim();
     }
 
-    public String deleteTask(int index) {
-        lastModifiedTask = tasks.remove(index);
+    public String markTask(Task[] taskArray, boolean isDone) {
+        StringBuilder feedback = new StringBuilder();
+        feedback.append("Task" + (taskArray.length == 1 ? " " : "s "));
+        lastModifiedTasks = new Task[taskArray.length];
+        undoCommand = isDone ? CommandType.UNMARK : CommandType.MARK;
+        int i = 0;
+        for (Task task : taskArray) {
+            task.markDone(isDone);
+            lastModifiedTasks[i] = task;
+            feedback.append(tasks.indexOf(task) + 1);
+            if (i != taskArray.length - 1) {
+                feedback.append(", ");
+            } else {
+                feedback.append(" ");
+            }
+            i++;
+        }
+        feedback.append((isDone ? "has been marked as done" : "has been marked as not done"));
+
+        storage.saveTasks(getWritableTaskString());
+        return feedback.toString().trim();
+    }
+
+    public String deleteTask(int[] indices) {
+        StringBuilder feedback = new StringBuilder();
+        feedback.append("Deleted task" + (indices.length == 1 ? "" : "s") + ":\n");
+        lastModifiedTasks = new Task[indices.length];
         undoCommand = CommandType.ADD;
+        int i = 0;
+        for (int index : indices) {
+            lastModifiedTasks[i] = tasks.remove(index);
+            feedback.append("\t\t" + lastModifiedTasks[i].getDescription()).append("\n");
+            i++;
+        }
+
         storage.saveTasks(getWritableTaskString());
-        return "Deleted task: " + lastModifiedTask.getDescription();
+        return feedback.toString().trim();
     }
 
-    public String deleteTask(Task task) {
-        return deleteTask(tasks.indexOf(task));
+    public String deleteTask(Task[] taskArray) {
+        StringBuilder feedback = new StringBuilder();
+        feedback.append("Deleted task" + (taskArray.length == 1 ? "" : "s") + ":\n");
+        lastModifiedTasks = new Task[taskArray.length];
+        undoCommand = CommandType.ADD;
+        int i = 0;
+        for (Task task : taskArray) {
+            lastModifiedTasks[i] = task;
+            tasks.remove(task);
+            feedback.append("\t\t" + task.getDescription()).append("\n");
+            i++;
+        }
+
+        storage.saveTasks(getWritableTaskString());
+        return feedback.toString().trim();
     }
 
     public String undoCommand() {
-        if (lastModifiedTask == null || undoCommand == null) {
+        if (lastModifiedTasks == null || undoCommand == null) {
             return "Nothing to undo, sad";
         }
 
         switch (undoCommand) {
         case ADD:
-            return addTask(lastModifiedTask);
+            return addTask(lastModifiedTasks);
         case MARK:
-            return markTask(lastModifiedTask, true);
+            return markTask(lastModifiedTasks, true);
         case UNMARK:
-            return markTask(lastModifiedTask, false);
+            return markTask(lastModifiedTasks, false);
         case DELETE:
-            return deleteTask(lastModifiedTask);
+            return deleteTask(lastModifiedTasks);
         default:
             return "What am I doing here??? Check my code...";
         }

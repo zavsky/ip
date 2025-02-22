@@ -5,12 +5,12 @@ import bluebird.commands.Command;
 
 public class MarkCommand extends Command implements TaskCommand {
     private final TaskManager taskManager;
-    private final int taskIndex;
+    private final int[] taskIndices;
     private final boolean markAsDone;
 
-    public MarkCommand(TaskManager taskManager, int taskIndex, boolean markAsDone) {
+    public MarkCommand(TaskManager taskManager, int[] taskIndices, boolean markAsDone) {
         this.taskManager = taskManager;
-        this.taskIndex = taskIndex;
+        this.taskIndices = taskIndices;
         this.markAsDone = markAsDone;
     }
 
@@ -21,12 +21,11 @@ public class MarkCommand extends Command implements TaskCommand {
      */
     @Override
     public boolean execute() {
-        commandFeedback = taskManager.markTask(taskIndex, markAsDone);
+        commandFeedback = taskManager.markTask(taskIndices, markAsDone);
         return false;
     }
 
-    @Override
     public String showHelpString() {
-        return "Syntax:\nmark task_number\nunmark task_number"; // implement THIS
+        return "Syntax:\nmark task_number [task_number ...]\nunmark task_number [task_number ...]"; // implement THIS
     }
 }
