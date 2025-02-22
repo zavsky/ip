@@ -10,7 +10,7 @@ public class ListCommand extends Command {
     }
 
     /**
-     * Calls UIHandler to display all saved Tasks handled by TaskManager.
+     * Adds String-formatted task list to @attribute commandFeedback.
      * @return false to signal that the program should not end.
      */
     @Override

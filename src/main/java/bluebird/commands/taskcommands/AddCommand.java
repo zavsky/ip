@@ -18,10 +18,12 @@ public class AddCommand extends Command implements TaskCommand {
     }
 
     /**
-     * Creates a Task via TaskFactory class and
-     * adds it to existing ArrayList handled by TaskManager.
-     * Prints a success message.
+     * Creates a Task via TaskFactory with user-given inputs.
+     * @attribute taskType and details must be non-empty,
+     * but its validity is unchecked.
+     * Adds a message to the @attribute commandFeedback if successful.
      * @return false to signal that the program should not end.
+     * @throws exception if Task creation was unsuccessful.
      */
     @Override
     public boolean execute() throws IllegalTaskParameterException {

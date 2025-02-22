@@ -19,7 +19,7 @@ public class HelpCommand extends Command {
     }
 
     /**
-     * Writes a help string in commandFeedback.
+     * Writes a help string to @attribute commandFeedback.
      * @return false to signal that the program should not end.
      */
     @Override

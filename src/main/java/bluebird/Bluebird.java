@@ -25,7 +25,7 @@ public class Bluebird {
     }
 
     public String confused() {
-        return "I don't quite get you... gotta speak clearer\n";
+        return "Either no command or I don't quite get you... gotta speak clearer\n";
     }
 
     public String helpless() {

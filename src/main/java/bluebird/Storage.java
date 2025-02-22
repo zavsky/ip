@@ -12,6 +12,10 @@ import java.util.List;
 public class Storage {
     private static final String FILE_PATH = "./task.txt";
 
+    public Storage() {
+        ensureFileExists();
+    }
+
     private static void printFileContents(String fileSavePath) {
         File f = new File(fileSavePath);
         try (Scanner s = new Scanner(f)) {

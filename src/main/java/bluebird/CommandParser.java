@@ -1,5 +1,9 @@
 package bluebird;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
 import bluebird.commands.*;
 import bluebird.commands.taskcommands.*;
 import bluebird.tasks.TaskType;
@@ -8,6 +12,35 @@ public class CommandParser {
     private final TaskManager taskManager;
     private final TaskFactory taskFactory;
     private final UIHandler ui;
+
+    private static final Map<String, CommandType> COMMAND_MAP = new HashMap<>();
+    private static final Map<String, TaskType> TASK_TYPES = new HashMap<>();
+
+    static {
+        COMMAND_MAP.put("list", CommandType.LIST);
+        COMMAND_MAP.put("l", CommandType.LIST);
+        COMMAND_MAP.put("add", CommandType.ADD);
+        COMMAND_MAP.put("a", CommandType.ADD);
+        COMMAND_MAP.put("mark", CommandType.MARK);
+        COMMAND_MAP.put("m", CommandType.MARK);
+        COMMAND_MAP.put("unmark", CommandType.UNMARK);
+        COMMAND_MAP.put("u", CommandType.UNMARK);
+        COMMAND_MAP.put("delete", CommandType.DELETE);
+        COMMAND_MAP.put("d", CommandType.DELETE);
+        COMMAND_MAP.put("undo", CommandType.UNDO);
+        COMMAND_MAP.put("z", CommandType.UNDO);
+        COMMAND_MAP.put("help", CommandType.HELP);
+        COMMAND_MAP.put("h", CommandType.HELP);
+        COMMAND_MAP.put("exit", CommandType.EXIT);
+        COMMAND_MAP.put("e", CommandType.EXIT);
+
+        TASK_TYPES.put("deadline", TaskType.DEADLINE);
+        TASK_TYPES.put("d", TaskType.DEADLINE);
+        TASK_TYPES.put("event", TaskType.EVENT);
+        TASK_TYPES.put("e", TaskType.EVENT);
+        TASK_TYPES.put("todo", TaskType.TODO);
+        TASK_TYPES.put("t", TaskType.TODO);
+    }
     
     public CommandParser(TaskManager taskManager, TaskFactory taskFactory, UIHandler ui) {
         this.taskManager = taskManager;
@@ -17,33 +50,27 @@ public class CommandParser {
     
     public Command parseInput(String input) {
         String[] parts = input.split(" ", 2);
-        String command = parts[0].toLowerCase();
-        String arguments = parts.length > 1 ? parts[1].trim() : "";
+        String commandString = parts[0].toLowerCase();
+        Optional<String> arguments = parts.length > 1 ? Optional.of(parts[1].trim()) : Optional.empty();
 
-        switch (command) {
-        case "list":
-        case "l":
+        CommandType commandType = COMMAND_MAP.getOrDefault(commandString, CommandType.UNKNOWN);
+
+        switch (commandType) {
+        case LIST:
             return new ListCommand(taskManager);
-        case "add":
-        case "a":
-            return parseAddCommand(arguments);
-        case "mark":
-        case "m":
-            return parseMarkCommand(arguments, true);
-        case "unmark":
-        case "u":
-            return parseMarkCommand(arguments, false);
-        case "delete":
-        case "d":
-            return parseDeleteCommand(arguments);
-        case "undo":
-        case "z":
+        case ADD:
+            return parseAddCommand(arguments.orElse(""));
+        case MARK:
+            return parseMarkCommand(arguments.orElse(""), true);
+        case UNMARK:
+            return parseMarkCommand(arguments.orElse(""), false);
+        case DELETE:
+            return parseDeleteCommand(arguments.orElse(""));
+        case UNDO:
             return new UndoCommand(taskManager);
-        case "help":
-        case "h":
+        case HELP:
             return new HelpCommand();
-        case "exit":
-        case "e":
+        case EXIT:
             return new ExitCommand();
         default:
             ui.showConfused();
@@ -52,20 +79,12 @@ public class CommandParser {
     }
     
     private Command parseAddCommand(String arguments) {
-        String args = arguments;
-        String[] parts = args.split(" ", 2);
-        String taskType = parts[0].toLowerCase();
-
-        if (!isValidTaskType(taskType)) {
-            String input = ui.getUserInput("Add event, deadline or todo? ").trim();
-            parts = input.split(" ", 2);
-            taskType = parts[0].toLowerCase();
-            
-            if (!isValidTaskType(taskType)) {
-                return null;
-            }
+        String[] parts = getValidTaskTypeAndDetails(arguments, "Add event, deadline or todo? ");
+        if (parts == null) {
+            return null;
         }
 
+        String taskType = parts[0].toLowerCase();
         String details = (parts.length > 1) ? parts[1] : ui.getUserInput("Enter details: ");
 
         if (details.trim().isEmpty()) {
@@ -75,22 +94,29 @@ public class CommandParser {
         return new AddCommand(taskManager, taskFactory, taskType, details);
     }
 
-    private boolean isValidTaskType(String args) {
-        try {
-            TaskType.valueOf(args.toUpperCase());
-            return true;
-        } catch (IllegalArgumentException e) {
-            return false;
+    private String[] getValidTaskTypeAndDetails(String input, String prompt) {
+        String[] parts = input.split(" ", 2);
+        String taskType = parts[0].toLowerCase();
+
+        if (!TASK_TYPES.containsKey(taskType)) {
+            input = ui.getUserInput(prompt).trim();
+            parts = input.split(" ", 2);
+            taskType = parts[0].toLowerCase();
+
+            if (!TASK_TYPES.containsKey(taskType)) {
+                return null;
+            }
         }
+        return parts;
     }
 
     private Command parseMarkCommand(String arguments, boolean markAsDone) {
+        if (taskManager.isEmpty()) {
+            return null;
+        }
         String args = arguments;
         if (args.isEmpty()) {
             ui.showTasks(taskManager.getPrintableTasks(), (markAsDone ? MessageType.MARK : MessageType.UNMARK));
-            if (taskManager.isEmpty()) {
-                return null;
-            }
             args = ui.getUserInput("Enter task number: ").trim();
         }
         if (args.isEmpty()) {

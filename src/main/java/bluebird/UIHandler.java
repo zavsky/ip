@@ -39,7 +39,7 @@ public class UIHandler {
         }
 
         printLine();
-        System.out.println(messageFormat + message);
+        System.out.println(messageFormat + message + "\n");
         printLine();
     }
 
@@ -100,15 +100,21 @@ public class UIHandler {
      */
     public String promptUser(String queryString) throws IllegalTaskParameterException {
         clearScreen();
-        String userResponse = getUserInput(queryString).trim();
+        String userResponse = getUserInput(queryString + "\n").trim();
         if (!userResponse.isEmpty()) {
             return userResponse;
         }
-        userResponse = getUserInput("Do you want to leave this field empty? y/N  ");
-        
-        if (userResponse.equalsIgnoreCase("y")) {
+        if (confirmAction("leave this field empty")) {
             return "?";
         }
         throw new IllegalTaskParameterException();
+    }
+
+    public boolean confirmAction(String action) {
+        String userResponse = getUserInput("Are you sure to " + action + "? y/N  ");
+        if (userResponse.equalsIgnoreCase("y")) {
+            return true;
+        }
+        return false;
     }
 }

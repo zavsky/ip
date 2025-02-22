@@ -6,12 +6,8 @@ import bluebird.commands.HelpCommand;
 import bluebird.commands.ListCommand;
 import bluebird.exceptions.IllegalTaskParameterException;
 
-// todo implement marking and unmarking and deleting multiple tasks in one command
 public class Main {
     public static void main (String[] args) {
-        Storage storage = new Storage();
-        storage.ensureFileExists();
-        
         TaskManager taskManager = new TaskManager();
         UIHandler ui = new UIHandler();
         TaskFactory taskFactory = new TaskFactory(ui);

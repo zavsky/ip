@@ -50,7 +50,7 @@ public class TaskFactory {
         String by, description = parts[0].trim();
 
         if (parts.length < 2) {
-            by = ui.promptUser(description + "\nWhen is this due? Don't include /by here\n");
+            by = ui.promptUser(description + "\nWhen is this due? Don't include /by here");
         } else {
             by = parts[1].trim();
         }
@@ -63,15 +63,15 @@ public class TaskFactory {
         String description = parts[0].trim();
         
         if (parts.length == 1) {
-            from = ui.promptUser(description + "\nWhen does this begin? Don't include /from here\n");
-            to = ui.promptUser(description + "\nWhen will this end? Don't include /to here\n");
+            from = ui.promptUser(description + "\nWhen does this begin? Don't include /from here");
+            to = ui.promptUser(description + "\nWhen will this end? Don't include /to here");
         } else if (parts.length == 2) {
             String[] partsNoDelim = details.split(REGEX_EVENT_NODELIM_STRING, 2);
             if (parts[1].contains("/f")) {
                 from = partsNoDelim[1].trim();
-                to = ui.promptUser(description + "\nWhen will this end? Don't include /to here\n");
+                to = ui.promptUser(description + "\nWhen will this end? Don't include /to here");
             } else {
-                from = ui.promptUser(description + "\nWhen does this begin? Don't include /from here\n");
+                from = ui.promptUser(description + "\nWhen does this begin? Don't include /from here");
                 to = partsNoDelim[1].trim();
             }
         } else {

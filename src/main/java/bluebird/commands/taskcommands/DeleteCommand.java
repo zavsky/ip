@@ -1,7 +1,5 @@
 package bluebird.commands.taskcommands;
 
-import java.util.ArrayList;
-
 import bluebird.TaskManager;
 import bluebird.commands.Command;
 
@@ -15,8 +13,8 @@ public class DeleteCommand extends Command implements TaskCommand {
     }
 
     /**
-     * Delete a task via the index specified by the user.
-     * Prints a success message.
+     * Deletes a task via TaskManager using user-specified index.
+     * Adds a message to the @attribute commandFeedback if successful.
      * @return false to signal that the program should not end.
      */
     @Override

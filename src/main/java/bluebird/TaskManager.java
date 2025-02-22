@@ -26,7 +26,7 @@ public class TaskManager {
         lastModifiedTask = task;
         undoCommand = CommandType.DELETE;
         storage.saveTasks(getWritableTaskString());
-        return "Added task: " + lastModifiedTask.getDescription() + "\n";
+        return "Added task: " + lastModifiedTask.getDescription();
     }
 
     public String markTask(int index, boolean isDone) {
@@ -39,14 +39,14 @@ public class TaskManager {
         undoCommand = isDone ? CommandType.UNMARK : CommandType.MARK;
         storage.saveTasks(getWritableTaskString());
         return "Task " + (tasks.indexOf(lastModifiedTask) + 1) + 
-            (isDone ? " has been marked as done" : " has been marked as not done") + "\n";
+            (isDone ? " has been marked as done" : " has been marked as not done");
     }
 
     public String deleteTask(int index) {
         lastModifiedTask = tasks.remove(index);
         undoCommand = CommandType.ADD;
         storage.saveTasks(getWritableTaskString());
-        return "Deleted task: " + lastModifiedTask.getDescription() + "\n";
+        return "Deleted task: " + lastModifiedTask.getDescription();
     }
 
     public String deleteTask(Task task) {
@@ -55,7 +55,7 @@ public class TaskManager {
 
     public String undoCommand() {
         if (lastModifiedTask == null || undoCommand == null) {
-            return "Nothing to undo, sad\n";
+            return "Nothing to undo, sad";
         }
 
         switch (undoCommand) {
@@ -82,10 +82,28 @@ public class TaskManager {
         }
     }
 
+    /**
+     * Calculates the base-10 exponent value, ignores factor
+     * @param value signedness is ignored
+     * @return the exponent value of an integer input
+     */
+    private int getExponent(int value) {
+        int exp = 0, val = Math.abs(value);
+        for (int i = 9; val > 0; i *= 10) {
+            val -= i;
+            exp++;
+        }
+        return exp;
+    }
+
     public String getPrintableTasks() {
         String taskString = "";
-        for (int i = 0; i < tasks.size(); i++) {
-            taskString = taskString + "\t\t" + (i+1) + ". " + tasks.get(i) + System.lineSeparator();
+        int taskSize = tasks.size() - 1;
+        for (int i = 0; i <= taskSize; i++) {
+            taskString = taskString + "\t\t" + (i+1) + ". " + tasks.get(i);
+            if (i != taskSize) {
+                taskString = taskString + System.lineSeparator();
+            }
         }
         return taskString;
     }

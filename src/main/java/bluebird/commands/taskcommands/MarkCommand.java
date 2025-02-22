@@ -15,8 +15,8 @@ public class MarkCommand extends Command implements TaskCommand {
     }
 
     /**
-     * Toggles the Task completion (markAsDone) flag according to user input.
-     * Prints a success message.
+     * Toggles Task completion via TaskManager using user-specified index.
+     * Adds a message to the @attribute commandFeedback if successful.
      * @return false to signal that the program should not end.
      */
     @Override
