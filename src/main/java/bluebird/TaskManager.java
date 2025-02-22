@@ -155,18 +155,24 @@ public class TaskManager {
      */
     private int getExponent(int value) {
         int exp = 0, val = Math.abs(value);
-        for (int i = 9; val > 0; i *= 10) {
+        int i = 9;
+        do {
             val -= i;
+            i *= 10;
             exp++;
-        }
+        } while (val > 0);
+        
         return exp;
     }
 
     public String getPrintableTasks() {
         String taskString = "";
         int taskSize = tasks.size() - 1;
+        int taskExp = getExponent(taskSize+1);
+
         for (int i = 0; i <= taskSize; i++) {
-            taskString = taskString + "\t\t" + (i+1) + ". " + tasks.get(i);
+            String spaces = String.format("%" + (taskExp - getExponent(i+1) + 1) + "s", "");
+            taskString = taskString + "\t\t" + (i+1) + "." + spaces + tasks.get(i);
             if (i != taskSize) {
                 taskString = taskString + System.lineSeparator();
             }
