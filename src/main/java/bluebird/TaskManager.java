@@ -1,6 +1,9 @@
 package bluebird;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 
 import bluebird.tasks.Task;
 
@@ -10,61 +13,43 @@ public class TaskManager {
     private Task[] lastModifiedTasks = null;
     private CommandType undoCommand = null;
 
+    private final Map<CommandType, Function<Task[], String>> undoActions = Map.of(
+        CommandType.ADD, this::addTask,
+        CommandType.MARK, tasks -> markTask(true, tasks),
+        CommandType.UNMARK, tasks -> markTask(false, tasks),
+        CommandType.DELETE, this::deleteTask
+    );
+
     public TaskManager() {
         loadTasks();
     }
 
-    public String addTask(Task task) {
-        tasks.add(task);
-        lastModifiedTasks = new Task[] {task};
+    public String addTask(Task... tasksToAdd) {
+        StringBuilder feedback = new StringBuilder("Added task" + (tasksToAdd.length == 1 ? "" : "s") + ":\n");
+        lastModifiedTasks = new Task[tasksToAdd.length];
         undoCommand = CommandType.DELETE;
-
-        storage.saveTasks(getWritableTaskString());
-        return "Added task: " + task.getDescription();
-    }
-
-    private String addTask(Task[] taskArray) {
-        StringBuilder feedback = new StringBuilder();
-        feedback.append("Added task" + (taskArray.length == 1 ? "" : "s") + ":\n");
-        lastModifiedTasks = new Task[taskArray.length];
-        undoCommand = CommandType.DELETE;
-        int i = 0;
-        for (Task task : taskArray) {
+        for (int i = 0; i < tasksToAdd.length; i++) {
+            Task task = tasksToAdd[i];
             tasks.add(task);
             lastModifiedTasks[i] = task;
-            feedback.append("\t\t" + task.getDescription()).append("\n");
-            i++;
+            feedback.append("\t\t").append(task.getDescription()).append("\n");
         }
-
-        storage.saveTasks(getWritableTaskString());
-        return feedback.toString().trim();
-    } 
-
-    public String markTask(int[] indices, boolean isDone) {
-        StringBuilder feedback = new StringBuilder();
-        feedback.append("Task" + (indices.length == 1 ? " " : "s "));
-        lastModifiedTasks = new Task[indices.length];
-        undoCommand = isDone ? CommandType.UNMARK : CommandType.MARK;
-        int i = 0;
-        for (int index : indices) {
-            tasks.get(index).markDone(isDone);
-            lastModifiedTasks[i] = tasks.get(index);
-            feedback.append(index + 1);
-            if (i != indices.length - 1) {
-                feedback.append(", ");
-            } else {
-                feedback.append(" ");
-            }
-            i++;
-        }
-        feedback.append((isDone ? "has been marked as done" : "has been marked as not done"));
-
         storage.saveTasks(getWritableTaskString());
         return feedback.toString().trim();
     }
 
-    public String markTask(Task[] taskArray, boolean isDone) {
+    public String markTask(int[] indices, boolean isDone) {
+        int taskCount = indices.length;
+        Task[] taskArray = new Task[taskCount];
+        for (int i = 0; i < taskCount; i++) {
+            taskArray[i] = tasks.get(indices[i]);
+        }
+        return markTask(isDone, taskArray);
+    }
+
+    private String markTask(boolean isDone, Task... taskArray) {
         StringBuilder feedback = new StringBuilder();
+        StringBuilder taskString = new StringBuilder();
         feedback.append("Task" + (taskArray.length == 1 ? " " : "s "));
         lastModifiedTasks = new Task[taskArray.length];
         undoCommand = isDone ? CommandType.UNMARK : CommandType.MARK;
@@ -72,37 +57,30 @@ public class TaskManager {
         for (Task task : taskArray) {
             task.markDone(isDone);
             lastModifiedTasks[i] = task;
-            feedback.append(tasks.indexOf(task) + 1);
+
+            taskString.append(tasks.indexOf(task)+1);
             if (i != taskArray.length - 1) {
-                feedback.append(", ");
-            } else {
-                feedback.append(" ");
+                taskString.append(", ");
             }
+
             i++;
         }
-        feedback.append((isDone ? "has been marked as done" : "has been marked as not done"));
+        feedback.append(taskString + (isDone ? " has been marked as done" : " has been marked as not done"));
 
         storage.saveTasks(getWritableTaskString());
         return feedback.toString().trim();
     }
 
     public String deleteTask(int[] indices) {
-        StringBuilder feedback = new StringBuilder();
-        feedback.append("Deleted task" + (indices.length == 1 ? "" : "s") + ":\n");
-        lastModifiedTasks = new Task[indices.length];
-        undoCommand = CommandType.ADD;
-        int i = 0;
-        for (int index : indices) {
-            lastModifiedTasks[i] = tasks.remove(index);
-            feedback.append("\t\t" + lastModifiedTasks[i].getDescription()).append("\n");
-            i++;
+        int taskCount = indices.length;
+        Task[] taskArray = new Task[taskCount];
+        for (int i = 0; i < taskCount; i++) {
+            taskArray[i] = tasks.get(indices[i]);
         }
-
-        storage.saveTasks(getWritableTaskString());
-        return feedback.toString().trim();
+        return deleteTask(taskArray);
     }
 
-    public String deleteTask(Task[] taskArray) {
+    public String deleteTask(Task... taskArray) {
         StringBuilder feedback = new StringBuilder();
         feedback.append("Deleted task" + (taskArray.length == 1 ? "" : "s") + ":\n");
         lastModifiedTasks = new Task[taskArray.length];
@@ -124,18 +102,21 @@ public class TaskManager {
             return "Nothing to undo, sad";
         }
 
-        switch (undoCommand) {
-        case ADD:
-            return addTask(lastModifiedTasks);
-        case MARK:
-            return markTask(lastModifiedTasks, true);
-        case UNMARK:
-            return markTask(lastModifiedTasks, false);
-        case DELETE:
-            return deleteTask(lastModifiedTasks);
-        default:
-            return "What am I doing here??? Check my code...";
-        }
+        return undoActions.getOrDefault(undoCommand, tasks -> "What am I doing here??? Check my code...")
+              .apply(lastModifiedTasks);
+
+        // switch (undoCommand) {
+        // case ADD:
+        //     return addTask(lastModifiedTasks);
+        // case MARK:
+        //     return markTask(true, lastModifiedTasks);
+        // case UNMARK:
+        //     return markTask(false, lastModifiedTasks);
+        // case DELETE:
+        //     return deleteTask(lastModifiedTasks);
+        // default:
+        //     return "What am I doing here??? Check my code...";
+        // }
     }
 
     private void loadTasks() {
@@ -148,36 +129,19 @@ public class TaskManager {
         }
     }
 
-    /**
-     * Calculates the base-10 exponent value, ignores factor
-     * @param value signedness is ignored
-     * @return the exponent value of an integer input
-     */
-    private int getExponent(int value) {
-        int exp = 0, val = Math.abs(value);
-        int i = 9;
-        do {
-            val -= i;
-            i *= 10;
-            exp++;
-        } while (val > 0);
-        
-        return exp;
-    }
-
     public String getPrintableTasks() {
-        String taskString = "";
-        int taskSize = tasks.size() - 1;
-        int taskExp = getExponent(taskSize+1);
-
-        for (int i = 0; i <= taskSize; i++) {
-            String spaces = String.format("%" + (taskExp - getExponent(i+1) + 1) + "s", "");
-            taskString = taskString + "\t\t" + (i+1) + "." + spaces + tasks.get(i);
-            if (i != taskSize) {
-                taskString = taskString + System.lineSeparator();
+        StringBuilder taskString = new StringBuilder();
+        int taskCount = tasks.size();
+        int maxDigits = String.valueOf(taskCount).length(); // Number of digits in the largest index
+    
+        for (int i = 0; i < taskCount; i++) {
+            String formattedIndex = String.format("%" + maxDigits + "d", i + 1);
+            taskString.append("\t\t").append(formattedIndex).append(". ").append(tasks.get(i));
+            if (i != taskCount - 1) {
+                taskString.append(System.lineSeparator());
             }
         }
-        return taskString;
+        return taskString.toString();
     }
 
     public int getTaskCount() {
@@ -193,14 +157,18 @@ public class TaskManager {
     }
 
     public String getWritableTaskString() {
-        String writableTask = "";
+        StringBuilder writableTask = new StringBuilder();
         for (Task t : tasks) {
-            writableTask = writableTask + t.toWritable();
+            writableTask.append(t.toWritable());
         }
-        return writableTask;
+        return writableTask.toString();
     }
 
     public boolean isEmpty() {
         return tasks.size() == 0;
+    }
+
+    private int[] getIndices(Task[] tasks) {
+        return Arrays.stream(tasks).mapToInt(this.tasks::indexOf).toArray();
     }
 }

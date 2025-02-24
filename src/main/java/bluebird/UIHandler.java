@@ -39,7 +39,7 @@ public class UIHandler {
         }
 
         printLine();
-        System.out.printf(messageFormat + message + "\n");
+        System.out.printf(messageFormat + message + "\n\n");
         printLine();
     }
 

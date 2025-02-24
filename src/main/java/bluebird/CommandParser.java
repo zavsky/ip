@@ -1,10 +1,10 @@
 package bluebird;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 import bluebird.commands.*;
 import bluebird.commands.taskcommands.*;
@@ -17,6 +17,8 @@ public class CommandParser {
 
     private static final Map<String, CommandType> COMMAND_MAP = new HashMap<>();
     private static final Map<String, TaskType> TASK_TYPES = new HashMap<>();
+
+    private final Map<CommandType, Function<String, Command>> commandParsers = new HashMap<>();
 
     static {
         COMMAND_MAP.put("list", CommandType.LIST);
@@ -48,6 +50,15 @@ public class CommandParser {
         this.taskManager = taskManager;
         this.taskFactory = taskFactory;
         this.ui = ui;
+
+        commandParsers.put(CommandType.LIST, args -> new ListCommand(taskManager));
+        commandParsers.put(CommandType.ADD, this::parseAddCommand);
+        commandParsers.put(CommandType.MARK, args -> parseMarkCommand(args, true));
+        commandParsers.put(CommandType.UNMARK, args -> parseMarkCommand(args, false));
+        commandParsers.put(CommandType.DELETE, this::parseDeleteCommand);
+        commandParsers.put(CommandType.UNDO, args -> new UndoCommand(taskManager));
+        commandParsers.put(CommandType.HELP, args -> new HelpCommand());
+        commandParsers.put(CommandType.EXIT, args -> new ExitCommand());
     }
     
     public Command parseInput(String input) {
@@ -57,27 +68,34 @@ public class CommandParser {
 
         CommandType commandType = COMMAND_MAP.getOrDefault(commandString, CommandType.UNKNOWN);
 
-        switch (commandType) {
-        case LIST:
-            return new ListCommand(taskManager);
-        case ADD:
-            return parseAddCommand(arguments.orElse(""));
-        case MARK:
-            return parseMarkCommand(arguments.orElse(""), true);
-        case UNMARK:
-            return parseMarkCommand(arguments.orElse(""), false);
-        case DELETE:
-            return parseDeleteCommand(arguments.orElse(""));
-        case UNDO:
-            return new UndoCommand(taskManager);
-        case HELP:
-            return new HelpCommand();
-        case EXIT:
-            return new ExitCommand();
-        default:
+        Function<String, Command> parser = commandParsers.getOrDefault(commandType, args -> {
             ui.showConfused();
             return new HelpCommand();
-        }
+        });
+
+        return parser.apply(arguments.orElse(""));
+
+        // switch (commandType) {
+        // case LIST:
+        //     return new ListCommand(taskManager);
+        // case ADD:
+        //     return parseAddCommand(arguments.orElse(""));
+        // case MARK:
+        //     return parseMarkCommand(arguments.orElse(""), true);
+        // case UNMARK:
+        //     return parseMarkCommand(arguments.orElse(""), false);
+        // case DELETE:
+        //     return parseDeleteCommand(arguments.orElse(""));
+        // case UNDO:
+        //     return new UndoCommand(taskManager);
+        // case HELP:
+        //     return new HelpCommand();
+        // case EXIT:
+        //     return new ExitCommand();
+        // default:
+        //     ui.showConfused();
+        //     return new HelpCommand();
+        // }
     }
     
     private Command parseAddCommand(String arguments) {
@@ -161,46 +179,13 @@ public class CommandParser {
         return new DeleteCommand(taskManager, taskIndices);
     }
 
-    // private Command parseDeleteCommand(String arguments) {
-    //     if (taskManager.isEmpty()) {
-    //         return null;
-    //     }
-    //     String args = arguments;
-    //     if (args.isEmpty()) {
-    //         ui.showTasks(taskManager.getPrintableTasks(), MessageType.DELETE);
-    //         args = ui.getUserInput("Enter task number to delete: ").trim();
-    //     }
-    //     if (args.isEmpty()) {
-    //         return null;
-    //     }
-    //     int taskIndex = parseTaskIndex(args);
-    //     if (taskIndex == -1) {
-    //         ui.showMessage(MessageType.ERROR, "Index for deletion does not make sense");
-    //         return new EmptyCommand();
-    //     }
-    //     return new DeleteCommand(taskManager, taskIndex);
-    // }
-
-    // private int parseTaskIndex(String input) {
-    //     try {
-    //         int index = Integer.parseInt(input.trim()) - 1;
-    //         // check index within bounds
-    //         if (index >= 0 && index < taskManager.getTaskCount()) {
-    //             return index;
-    //         }
-    //     } catch (NumberFormatException e) {
-    //         // invalid number format
-    //     }
-    //     return -1;
-    // }
-
     /**
      * Parses a string of space-separated integers into an array of integers.
      * Returns null if any part of the input is invalid.
      */
     private int[] parseTaskIndices(String input) {
         String[] parts = input.split("\\s+"); // Split by spaces
-        Integer[] indices = new Integer[parts.length];
+        int[] indices = new int[parts.length];
         try {
             for (int i = 0; i < parts.length; i++) {
                 int index = Integer.parseInt(parts[i].trim()) - 1;
@@ -214,11 +199,26 @@ public class CommandParser {
                 }
                 indices[i] = index;
             }
-            Arrays.sort(indices, Collections.reverseOrder());
-            return Arrays.stream(indices).mapToInt(Integer::intValue).toArray();
+            indices = removeDuplicateFromArray(indices);
+            return indices;
         } catch (NumberFormatException e) {
             // If any part of the input is not a valid integer, return null
             return null;
         }
+    }
+
+    private static int[] removeDuplicateFromArray(int[] a) {
+        Arrays.sort(a);
+        int aLen = a.length;
+        int[] temp = new int[aLen];
+        int j = 0;
+        for (int i = 0; i < aLen-1; i++) {
+            if (a[i] != a[i+1]) {
+                temp[j++] = a[i];
+            }
+        }
+        temp[j++] = a[aLen-1];
+
+        return Arrays.copyOf(temp, j);
     }
 }

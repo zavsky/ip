@@ -45,7 +45,7 @@ public class Main {
                 }
 
             } catch (IllegalTaskParameterException e) {
-                ui.showMessage(MessageType.INFO, "Task is not added\n");
+                ui.showMessage(MessageType.INFO, "Task is not added");
             }
         }
     }

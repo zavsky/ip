@@ -1,26 +1,32 @@
-# Duke project template
+# Bluebird project
 
-This is a project template for a greenfield Java project. It's named after the Java mascot _Duke_. Given below are instructions on how to use it.
+A very simple CLI-based real-life task manager written in Java. Given below are instructions on how to use it.
 
-## Setting up in Intellij
+If you're interested to find out what it does, check out the USERGuide[docs/README.md]!
 
-Prerequisites: JDK 17, update Intellij to the most recent version.
+## Running from Command Line (macOS)
 
-1. Open Intellij (if you are not in the welcome screen, click `File` > `Close Project` to close the existing project first)
-1. Open the project into Intellij as follows:
-   1. Click `Open`.
-   1. Select the project directory, and click `OK`.
-   1. If there are any further prompts, accept the defaults.
-1. Configure the project to use **JDK 17** (not other versions) as explained in [here](https://www.jetbrains.com/help/idea/sdk.html#set-up-jdk).<br>
-   In the same dialog, set the **Project language level** field to the `SDK default` option.
-1. After that, locate the `src/main/java/Duke.java` file, right-click it, and choose `Run Duke.main()` (if the code editor is showing compile errors, try restarting the IDE). If the setup is correct, you should see something like the below as the output:
-   ```
-   Hello from
-    ____        _        
-   |  _ \ _   _| | _____ 
-   | | | | | | | |/ / _ \
-   | |_| | |_| |   <  __/
-   |____/ \__,_|_|\_\___|
-   ```
+Prerequisites: JDK 17 (it hasn't been tested on newer Java versions)
 
-**Warning:** Keep the `src\main\java` folder as the root folder for Java files (i.e., don't rename those folders or move Java files to another folder outside of this folder path), as this is the default location some tools (e.g., Gradle) expect to find Java files.
+1. Navigate to the project root directory
+   - the folder containing `/src`
+1. Compile the Java files
+   - `javac -d out -sourcepath src/main/java src/main/java/bluebird/*.java src/main/java/bluebird/**/*.java`
+      - `-d out` tells Java to place compiled `.class` files inside the `out/` directory.
+      - `-sourcepath` ensures that Java compiles all necessary dependencies.
+      - The `*.java` and `**/*.java` ensure that all Java files in subdirectories are compiled.
+1. Run the program
+   - `java -cp out bluebird.Main`
+
+## Messing with JAR file
+
+1. Create a JAR file from the compiled Java files
+   - `jar cfm myjar.jar manifest.txt -C out .`
+      - Replace `myjar.jar` with any suitable name
+      - `c` creates a new JAR file.
+      - `f` specifies the output filename (`myjar.jar`).
+      - `m` includes the manifest file.
+      - `-C out .` means “change to the `out/` directory and add all compiled files.”
+1. Run the program from the JAR
+   - `java -jar myjar.jar`
+      - Replace `myjar.jar` with whatever name was chosen in the previous step

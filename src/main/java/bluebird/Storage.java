@@ -16,17 +16,6 @@ public class Storage {
         ensureFileExists();
     }
 
-    private static void printFileContents(String fileSavePath) {
-        File f = new File(fileSavePath);
-        try (Scanner s = new Scanner(f)) {
-            while (s.hasNext()) {
-                System.out.println(s.nextLine());
-            }
-        } catch (FileNotFoundException e) {
-            //
-        }
-    }
-
     public List<String> loadTasks() {
         try {
             return Files.readAllLines(Paths.get(FILE_PATH));
@@ -55,8 +44,8 @@ public class Storage {
         }
     }
 
-    private static void appendToFile(String fileSavePath, String textToAppend) {
-        try (FileWriter fw = new FileWriter(fileSavePath, true)) {
+    private static void appendToFile(String textToAppend) {
+        try (FileWriter fw = new FileWriter(FILE_PATH, true)) {
             fw.write(textToAppend);
         } // create a FileWriter in append mode
         catch (IOException e) {
