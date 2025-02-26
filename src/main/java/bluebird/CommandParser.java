@@ -15,36 +15,7 @@ public class CommandParser {
     private final TaskFactory taskFactory;
     private final UIHandler ui;
 
-    private static final Map<String, CommandType> COMMAND_MAP = new HashMap<>();
-    private static final Map<String, TaskType> TASK_TYPES = new HashMap<>();
-
     private final Map<CommandType, Function<String, Command>> commandParsers = new HashMap<>();
-
-    static {
-        COMMAND_MAP.put("list", CommandType.LIST);
-        COMMAND_MAP.put("l", CommandType.LIST);
-        COMMAND_MAP.put("add", CommandType.ADD);
-        COMMAND_MAP.put("a", CommandType.ADD);
-        COMMAND_MAP.put("mark", CommandType.MARK);
-        COMMAND_MAP.put("m", CommandType.MARK);
-        COMMAND_MAP.put("unmark", CommandType.UNMARK);
-        COMMAND_MAP.put("u", CommandType.UNMARK);
-        COMMAND_MAP.put("delete", CommandType.DELETE);
-        COMMAND_MAP.put("d", CommandType.DELETE);
-        COMMAND_MAP.put("undo", CommandType.UNDO);
-        COMMAND_MAP.put("z", CommandType.UNDO);
-        COMMAND_MAP.put("help", CommandType.HELP);
-        COMMAND_MAP.put("h", CommandType.HELP);
-        COMMAND_MAP.put("exit", CommandType.EXIT);
-        COMMAND_MAP.put("e", CommandType.EXIT);
-
-        TASK_TYPES.put("deadline", TaskType.DEADLINE);
-        TASK_TYPES.put("d", TaskType.DEADLINE);
-        TASK_TYPES.put("event", TaskType.EVENT);
-        TASK_TYPES.put("e", TaskType.EVENT);
-        TASK_TYPES.put("todo", TaskType.TODO);
-        TASK_TYPES.put("t", TaskType.TODO);
-    }
     
     public CommandParser(TaskManager taskManager, TaskFactory taskFactory, UIHandler ui) {
         this.taskManager = taskManager;
@@ -66,7 +37,7 @@ public class CommandParser {
         String commandString = parts[0].toLowerCase();
         Optional<String> arguments = parts.length > 1 ? Optional.of(parts[1].trim()) : Optional.empty();
 
-        CommandType commandType = COMMAND_MAP.getOrDefault(commandString, CommandType.UNKNOWN);
+        CommandType commandType = CommandType.fromString(commandString);
 
         Function<String, Command> parser = commandParsers.getOrDefault(commandType, args -> {
             ui.showConfused();
@@ -74,28 +45,6 @@ public class CommandParser {
         });
 
         return parser.apply(arguments.orElse(""));
-
-        // switch (commandType) {
-        // case LIST:
-        //     return new ListCommand(taskManager);
-        // case ADD:
-        //     return parseAddCommand(arguments.orElse(""));
-        // case MARK:
-        //     return parseMarkCommand(arguments.orElse(""), true);
-        // case UNMARK:
-        //     return parseMarkCommand(arguments.orElse(""), false);
-        // case DELETE:
-        //     return parseDeleteCommand(arguments.orElse(""));
-        // case UNDO:
-        //     return new UndoCommand(taskManager);
-        // case HELP:
-        //     return new HelpCommand();
-        // case EXIT:
-        //     return new ExitCommand();
-        // default:
-        //     ui.showConfused();
-        //     return new HelpCommand();
-        // }
     }
     
     private Command parseAddCommand(String arguments) {
@@ -118,12 +67,12 @@ public class CommandParser {
         String[] parts = input.split(" ", 2);
         String taskType = parts[0].toLowerCase();
 
-        if (!TASK_TYPES.containsKey(taskType)) {
+        if (TaskType.fromString(taskType) == null) {
             input = ui.getUserInput(prompt).trim();
             parts = input.split(" ", 2);
             taskType = parts[0].toLowerCase();
 
-            if (!TASK_TYPES.containsKey(taskType)) {
+            if (TaskType.fromString(taskType) == null) {
                 return null;
             }
         }

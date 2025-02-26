@@ -13,17 +13,9 @@ public class TaskFactory {
     private static final String REGEX_EVENT_STRING = "((?=/from)|(?=/f)|(?=/to)|(?=/t))";
     private static final String REGEX_EVENT_NODELIM_STRING = "/from|/f|/to|/t";
 
-    private static final Map<String, TaskType> TASK_TYPES = new HashMap<>();
     private static final Map<TaskType, Function<String, Task>> createTaskMap = new HashMap<>();
 
     static {
-        TASK_TYPES.put("todo", TaskType.TODO);
-        TASK_TYPES.put("t", TaskType.TODO);
-        TASK_TYPES.put("deadline", TaskType.DEADLINE);
-        TASK_TYPES.put("d", TaskType.DEADLINE);
-        TASK_TYPES.put("event", TaskType.EVENT);
-        TASK_TYPES.put("e", TaskType.EVENT);
-
         createTaskMap.put(TaskType.TODO, TaskFactory::createToDo);
         createTaskMap.put(TaskType.DEADLINE, TaskFactory::createDeadline);
         createTaskMap.put(TaskType.EVENT, TaskFactory::createEvent);
@@ -33,30 +25,12 @@ public class TaskFactory {
         TaskFactory.ui = ui;
     }
 
-    /**
-     * @throws IllegalTaskParameterException 
-     * 
-     */
     public static Task createTask (String taskType, String details) {
-        Function<String, Task> creator = createTaskMap.get(TASK_TYPES.get(taskType.toLowerCase()));
+        Function<String, Task> creator = createTaskMap.get(TaskType.fromString(taskType.toLowerCase()));
         if (creator == null) {
             return null;
         }
         return creator.apply(details);
-
-        // switch (taskType.toLowerCase()) {
-        // case "todo":
-        // case "t":
-        //     return createToDo(details);
-        // case "deadline":
-        // case "d":
-        //     return createDeadline(details);
-        // case "event":
-        // case "e":
-        //     return createEvent(details);
-        // default:
-        //     return null;
-        // }
     }
             
     private static ToDo createToDo(String description) {

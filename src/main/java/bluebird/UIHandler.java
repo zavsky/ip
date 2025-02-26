@@ -12,31 +12,7 @@ public class UIHandler {
     }
     
     public void showMessage(MessageType type, String message) {
-        String messageFormat;
-        
-        switch (type) {
-        case ERROR:
-            messageFormat = "\t" + bb.curse() + "\tERROR:\t";
-            break;
-        case SUCCESS:
-            messageFormat = "\t" + bb.scream() + "\n\t";
-            break;
-        case SHOWTASK:
-            messageFormat = "\tHere's your todo:\n\n";
-            break;
-        case MARK:
-            messageFormat = "\tSelect task to mark:\n\n";
-            break;
-        case UNMARK:
-            messageFormat = "\tSelect task to unmark:\n\n";
-            break;
-        case DELETE:
-            messageFormat = "\tSelect task to delete:\n\n";
-            break;
-        case INFO:
-        default:
-            messageFormat = "\t";
-        }
+        String messageFormat = MessageType.getMessageFormat(type);
 
         printLine();
         System.out.printf(messageFormat + message + "\n\n");

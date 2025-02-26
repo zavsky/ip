@@ -1,7 +1,5 @@
 package bluebird.commands;
 
-import bluebird.exceptions.IllegalTaskParameterException;
-
 public abstract class Command {
     public String commandFeedback = "";
     /**
@@ -10,7 +8,7 @@ public abstract class Command {
      * @return true if the program should exit, false otherwise.
      * @throws exception if an error occurs during execution.
      */
-    public boolean execute() throws IllegalTaskParameterException {
+    public boolean execute() {
         return false;
     };
 }
