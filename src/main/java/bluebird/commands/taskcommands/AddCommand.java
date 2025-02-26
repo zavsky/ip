@@ -3,7 +3,6 @@ package bluebird.commands.taskcommands;
 import bluebird.TaskFactory;
 import bluebird.TaskManager;
 import bluebird.commands.Command;
-import bluebird.exceptions.IllegalTaskParameterException;
 import bluebird.tasks.Task;
 
 public class AddCommand extends Command implements TaskCommand {
@@ -26,9 +25,9 @@ public class AddCommand extends Command implements TaskCommand {
      * @throws exception if Task creation was unsuccessful.
      */
     @Override
-    public boolean execute() throws IllegalTaskParameterException {
+    public boolean execute() {
         Task task = TaskFactory.createTask(taskType, details);
-        commandFeedback = taskManager.addTask(task);
+        commandFeedback = (task == null) ? "Task was not created" : taskManager.addTask(task);
         return false;
     }
 

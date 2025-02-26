@@ -21,7 +21,7 @@ public class Task {
     }
 
     public String getStatusIcon() {
-        return isDone ? "[X]" : "[ ]";
+        return isDone ? "\u001B[32m[X]\u001B[0m" : "[ ]";
     }
 
     @Override

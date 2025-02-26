@@ -1,6 +1,5 @@
 package bluebird;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -168,7 +167,7 @@ public class TaskManager {
         return tasks.size() == 0;
     }
 
-    private int[] getIndices(Task[] tasks) {
-        return Arrays.stream(tasks).mapToInt(this.tasks::indexOf).toArray();
-    }
+    // private int[] getIndices(Task[] tasks) {
+    //     return Arrays.stream(tasks).mapToInt(this.tasks::indexOf).toArray();
+    // }
 }

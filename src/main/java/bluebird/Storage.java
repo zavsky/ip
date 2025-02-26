@@ -1,10 +1,8 @@
 package bluebird;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Scanner;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
@@ -44,12 +42,12 @@ public class Storage {
         }
     }
 
-    private static void appendToFile(String textToAppend) {
-        try (FileWriter fw = new FileWriter(FILE_PATH, true)) {
-            fw.write(textToAppend);
-        } // create a FileWriter in append mode
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+    // private static void appendToFile(String textToAppend) {
+    //     try (FileWriter fw = new FileWriter(FILE_PATH, true)) {
+    //         fw.write(textToAppend);
+    //     } // create a FileWriter in append mode
+    //     catch (IOException e) {
+    //         e.printStackTrace();
+    //     }
+    // }
 }

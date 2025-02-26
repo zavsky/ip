@@ -1,5 +1,9 @@
 package bluebird;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
+
 import bluebird.exceptions.IllegalTaskParameterException;
 import bluebird.tasks.*;
 
@@ -9,32 +13,55 @@ public class TaskFactory {
     private static final String REGEX_EVENT_STRING = "((?=/from)|(?=/f)|(?=/to)|(?=/t))";
     private static final String REGEX_EVENT_NODELIM_STRING = "/from|/f|/to|/t";
 
+    private static final Map<String, TaskType> TASK_TYPES = new HashMap<>();
+    private static final Map<TaskType, Function<String, Task>> createTaskMap = new HashMap<>();
+
+    static {
+        TASK_TYPES.put("todo", TaskType.TODO);
+        TASK_TYPES.put("t", TaskType.TODO);
+        TASK_TYPES.put("deadline", TaskType.DEADLINE);
+        TASK_TYPES.put("d", TaskType.DEADLINE);
+        TASK_TYPES.put("event", TaskType.EVENT);
+        TASK_TYPES.put("e", TaskType.EVENT);
+
+        createTaskMap.put(TaskType.TODO, TaskFactory::createToDo);
+        createTaskMap.put(TaskType.DEADLINE, TaskFactory::createDeadline);
+        createTaskMap.put(TaskType.EVENT, TaskFactory::createEvent);
+    }
+
     public TaskFactory(UIHandler ui) {
         TaskFactory.ui = ui;
     }
+
     /**
      * @throws IllegalTaskParameterException 
      * 
      */
-    public static Task createTask (String taskType, String details) throws IllegalTaskParameterException {
-        switch (taskType.toLowerCase()) {
-        case "todo":
-        case "t":
-            return createToDo(details);
-        case "deadline":
-        case "d":
-            return createDeadline(details);
-        case "event":
-        case "e":
-            return createEvent(details);
-        default:
-            throw new IllegalTaskParameterException();
+    public static Task createTask (String taskType, String details) {
+        Function<String, Task> creator = createTaskMap.get(TASK_TYPES.get(taskType.toLowerCase()));
+        if (creator == null) {
+            return null;
         }
+        return creator.apply(details);
+
+        // switch (taskType.toLowerCase()) {
+        // case "todo":
+        // case "t":
+        //     return createToDo(details);
+        // case "deadline":
+        // case "d":
+        //     return createDeadline(details);
+        // case "event":
+        // case "e":
+        //     return createEvent(details);
+        // default:
+        //     return null;
+        // }
     }
             
-    private static ToDo createToDo(String description) throws IllegalTaskParameterException {
+    private static ToDo createToDo(String description) {
         if (description.trim().isEmpty()) {
-            throw new IllegalTaskParameterException();
+            return null;
         }
         return new ToDo(description);
     }
@@ -45,46 +72,55 @@ public class TaskFactory {
      * @return
      * @throws IllegalTaskParameterException
      */
-    private static Deadline createDeadline(String details) throws IllegalTaskParameterException {
+    private static Deadline createDeadline(String details) {
         String[] parts = details.split(REGEX_DEADLINE_STRING, 2);
         String by, description = parts[0].trim();
 
-        if (parts.length < 2) {
-            by = ui.promptUser(description + "\nWhen is this due? Don't include /by here");
-        } else {
-            by = parts[1].trim();
+        try {
+            if (parts.length < 2) {
+                by = ui.promptUser(description + "\nWhen is this due? Don't include /by here");
+            } else {
+                by = parts[1].trim();
+            }
+        } catch (IllegalTaskParameterException e) {
+            return null;
         }
         return new Deadline(description, by);
     }
 
-    private static Event createEvent(String details) throws IllegalTaskParameterException {
+    private static Event createEvent(String details) {
         String[] parts = details.split(REGEX_EVENT_STRING, 3);
         String from = "", to = "";
         String description = parts[0].trim();
         
-        if (parts.length == 1) {
-            from = ui.promptUser(description + "\nWhen does this begin? Don't include /from here");
-            to = ui.promptUser(description + "\nWhen will this end? Don't include /to here");
-        } else if (parts.length == 2) {
-            String[] partsNoDelim = details.split(REGEX_EVENT_NODELIM_STRING, 2);
-            if (parts[1].contains("/f")) {
-                from = partsNoDelim[1].trim();
-                to = ui.promptUser(description + "\nWhen will this end? Don't include /to here");
-            } else {
+        try {
+            if (parts.length == 1) {
                 from = ui.promptUser(description + "\nWhen does this begin? Don't include /from here");
-                to = partsNoDelim[1].trim();
-            }
-        } else {
-            String[] partsNoDelim = details.split(REGEX_EVENT_NODELIM_STRING, 3);
-
-            if (parts[1].contains("/f")) {
-                from = partsNoDelim[1].trim();
-                to = partsNoDelim[2].trim();
+                to = ui.promptUser(description + "\nWhen will this end? Don't include /to here");
+            } else if (parts.length == 2) {
+                String[] partsNoDelim = details.split(REGEX_EVENT_NODELIM_STRING, 2);
+                if (parts[1].contains("/f")) {
+                    from = partsNoDelim[1].trim();
+                    to = ui.promptUser(description + "\nWhen will this end? Don't include /to here");
+                } else {
+                    from = ui.promptUser(description + "\nWhen does this begin? Don't include /from here");
+                    to = partsNoDelim[1].trim();
+                }
             } else {
-                from = partsNoDelim[2].trim();
-                to = partsNoDelim[1].trim();
+                String[] partsNoDelim = details.split(REGEX_EVENT_NODELIM_STRING, 3);
+
+                if (parts[1].contains("/f")) {
+                    from = partsNoDelim[1].trim();
+                    to = partsNoDelim[2].trim();
+                } else {
+                    from = partsNoDelim[2].trim();
+                    to = partsNoDelim[1].trim();
+                }
             }
+        } catch (IllegalTaskParameterException e) {
+            return null;
         }
+
         return new Event(description, from, to);
     }
 
