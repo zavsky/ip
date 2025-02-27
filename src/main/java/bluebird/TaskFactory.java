@@ -70,15 +70,15 @@ public class TaskFactory {
         try {
             if (parts.length == 1) {
                 from = ui.promptUser(description + "\nWhen does this begin? Don't include /from here");
-                to = ui.promptUser(description + "\nWhen will this end? Don't include /to here");
+                to = ui.promptUser(description + " (from: " + from + ")\nWhen will this end? Don't include /to here");
             } else if (parts.length == 2) {
                 String[] partsNoDelim = details.split(REGEX_EVENT_NODELIM_STRING, 2);
                 if (parts[1].contains("/f")) {
                     from = partsNoDelim[1].trim();
-                    to = ui.promptUser(description + "\nWhen will this end? Don't include /to here");
+                    to = ui.promptUser(description + " (from: " + from + ")\nWhen will this end? Don't include /to here");
                 } else {
-                    from = ui.promptUser(description + "\nWhen does this begin? Don't include /from here");
                     to = partsNoDelim[1].trim();
+                    from = ui.promptUser(description + " (to: " + to + ")\nWhen does this begin? Don't include /from here");
                 }
             } else {
                 String[] partsNoDelim = details.split(REGEX_EVENT_NODELIM_STRING, 3);

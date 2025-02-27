@@ -1,6 +1,19 @@
 package bluebird.commands;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import bluebird.CommandType;
+
 public class HelpCommand extends Command {
+    private static final Map<CommandType, String> commandExample = new HashMap<>();
+
+    static {
+        commandExample.put(CommandType.ADD, "add d/e/t task_description");
+        commandExample.put(CommandType.MARK, "mark task_index [task_indices ...]");
+        commandExample.put(CommandType.UNMARK, "unmark task_index [task_indices ...]");
+        commandExample.put(CommandType.DELETE, "delete task_index [task_indices ...]");
+    }
 
     public HelpCommand() {
         commandFeedback = "Available commands:\n" +
@@ -16,6 +29,10 @@ public class HelpCommand extends Command {
             "\t    deadline   task_description [/by deadline_string]\n" +
             "\t    event      task_description [/from start_string] [/to end_string]\n" +
             "\t    todo       task_description";
+    }
+
+    public HelpCommand(CommandList commandList) {
+        commandFeedback = "Hint: " + commandExample.get(commandList);
     }
 
     /**

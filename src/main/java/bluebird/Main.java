@@ -10,7 +10,7 @@ public class Main {
         TaskManager taskManager = new TaskManager();
         UIHandler ui = new UIHandler();
         TaskFactory taskFactory = new TaskFactory(ui);
-        CommandParser parser = new CommandParser(taskManager, taskFactory, ui);
+        CommandParser parser = new CommandParser(taskManager, ui);
         ui.showHello();
 
         while (true) {
@@ -28,7 +28,6 @@ public class Main {
             }
 
             if (command.execute()) {
-                ui.clearScreen();
                 ui.showGoodbye();
                 break;
             }

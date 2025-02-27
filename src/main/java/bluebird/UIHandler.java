@@ -35,6 +35,7 @@ public class UIHandler {
     }
 
     public void showConfused() {
+        clearScreen();
         System.out.println(bb.confused());
     }
 
@@ -88,6 +89,7 @@ public class UIHandler {
 
     public boolean confirmAction(String action) {
         String userResponse = getUserInput("Are you sure to " + action + "? y/N  ");
+        clearScreen();
         if (userResponse.equalsIgnoreCase("y")) {
             return true;
         }

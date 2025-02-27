@@ -12,14 +12,12 @@ import bluebird.tasks.TaskType;
 
 public class CommandParser {
     private final TaskManager taskManager;
-    private final TaskFactory taskFactory;
     private final UIHandler ui;
 
     private final Map<CommandType, Function<String, Command>> commandParsers = new HashMap<>();
     
-    public CommandParser(TaskManager taskManager, TaskFactory taskFactory, UIHandler ui) {
+    public CommandParser(TaskManager taskManager, UIHandler ui) {
         this.taskManager = taskManager;
-        this.taskFactory = taskFactory;
         this.ui = ui;
 
         commandParsers.put(CommandType.LIST, args -> new ListCommand(taskManager));
@@ -60,7 +58,7 @@ public class CommandParser {
             return null;
         }
 
-        return new AddCommand(taskManager, taskFactory, taskType, details);
+        return new AddCommand(taskManager, taskType, details);
     }
 
     private String[] getValidTaskTypeAndDetails(String input, String prompt) {
