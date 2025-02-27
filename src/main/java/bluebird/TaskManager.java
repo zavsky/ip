@@ -103,19 +103,6 @@ public class TaskManager {
 
         return undoActions.getOrDefault(undoCommand, tasks -> "What am I doing here??? Check my code...")
               .apply(lastModifiedTasks);
-
-        // switch (undoCommand) {
-        // case ADD:
-        //     return addTask(lastModifiedTasks);
-        // case MARK:
-        //     return markTask(true, lastModifiedTasks);
-        // case UNMARK:
-        //     return markTask(false, lastModifiedTasks);
-        // case DELETE:
-        //     return deleteTask(lastModifiedTasks);
-        // default:
-        //     return "What am I doing here??? Check my code...";
-        // }
     }
 
     private void loadTasks() {
@@ -139,6 +126,27 @@ public class TaskManager {
             if (i != taskCount - 1) {
                 taskString.append(System.lineSeparator());
             }
+        }
+        return taskString.toString();
+    }
+
+    public String getPrintableTasks(String key) {
+        StringBuilder taskString = new StringBuilder();
+        int taskCount = tasks.size();
+        int maxDigits = String.valueOf(taskCount).length(); // Number of digits in the largest index
+    
+        for (int i = 0; i < taskCount; i++) {
+            String currTaskDescription = tasks.get(i).toString();
+            if (currTaskDescription.toLowerCase().contains(key.toLowerCase())) {
+                String formattedIndex = String.format("%" + maxDigits + "d", i + 1);
+                taskString.append("\t\t").append(formattedIndex).append(". ").append(tasks.get(i));
+                if (i != taskCount - 1) {
+                    taskString.append(System.lineSeparator());
+                }
+            }
+        }
+        if (taskString.isEmpty()) {
+            return "\t\tNo matches found";
         }
         return taskString.toString();
     }

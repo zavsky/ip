@@ -8,6 +8,7 @@ public enum MessageType {
     SUCCESS,
     INFO,
     SHOWTASK,
+    FINDTASK,
     MARK,
     UNMARK,
     DELETE;
@@ -20,6 +21,7 @@ public enum MessageType {
         MESSAGE_TYPE.put(SUCCESS, "\t" + bb.scream() + "\n\t");
         MESSAGE_TYPE.put(INFO, "\t");
         MESSAGE_TYPE.put(SHOWTASK, "\tHere's your todo:\n\n");
+        MESSAGE_TYPE.put(FINDTASK, "\tFind results:\n\n");
         MESSAGE_TYPE.put(MARK, "\tSelect task to mark:\n\n");
         MESSAGE_TYPE.put(UNMARK, "\tSelect task to unmark:\n\n");
         MESSAGE_TYPE.put(DELETE, "\tSelect task to delete:\n\n");

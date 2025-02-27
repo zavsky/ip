@@ -28,6 +28,7 @@ public class CommandParser {
         commandParsers.put(CommandType.UNDO, args -> new UndoCommand(taskManager));
         commandParsers.put(CommandType.HELP, args -> new HelpCommand());
         commandParsers.put(CommandType.EXIT, args -> new ExitCommand());
+        commandParsers.put(CommandType.FIND, this::parseFindCommand);
     }
     
     public Command parseInput(String input) {
@@ -43,6 +44,18 @@ public class CommandParser {
         });
 
         return parser.apply(arguments.orElse(""));
+    }
+
+    private Command parseFindCommand(String key) {
+        if (key.isEmpty()) {
+            ui.showTasks(taskManager.getPrintableTasks(), MessageType.SHOWTASK);
+            key = ui.getUserInput("Enter search key: ");
+            if (key.isEmpty()) {
+                return null;
+            }
+        }
+        ui.clearScreen();
+        return new FindCommand(taskManager, key);
     }
     
     private Command parseAddCommand(String arguments) {

@@ -31,8 +31,8 @@ public class HelpCommand extends Command {
             "\t    todo       task_description";
     }
 
-    public HelpCommand(CommandList commandList) {
-        commandFeedback = "Hint: " + commandExample.get(commandList);
+    public HelpCommand(CommandType commandType) {
+        commandFeedback = "Hint: " + commandExample.get(commandType);
     }
 
     /**

@@ -2,6 +2,7 @@ package bluebird;
 
 import bluebird.commands.Command;
 import bluebird.commands.EmptyCommand;
+import bluebird.commands.FindCommand;
 import bluebird.commands.HelpCommand;
 import bluebird.commands.ListCommand;
 
@@ -9,6 +10,7 @@ public class Main {
     public static void main (String[] args) {
         TaskManager taskManager = new TaskManager();
         UIHandler ui = new UIHandler();
+        @SuppressWarnings("unused")
         TaskFactory taskFactory = new TaskFactory(ui);
         CommandParser parser = new CommandParser(taskManager, ui);
         ui.showHello();
@@ -34,6 +36,8 @@ public class Main {
 
             if (command instanceof ListCommand) {
                 ui.showTasks(command.commandFeedback);
+            } else if (command instanceof FindCommand) {
+                ui.showTasks(command.commandFeedback, MessageType.FINDTASK);
             } else if (command instanceof HelpCommand) {
                 ui.showMessage(MessageType.INFO, command.commandFeedback);
             } else {

@@ -12,6 +12,7 @@ public enum CommandType {
     UNDO, 
     HELP, 
     EXIT, 
+    FIND,
     UNKNOWN;
 
     private static final Map<String, CommandType> COMMAND_TYPE = new HashMap<>();
@@ -32,7 +33,10 @@ public enum CommandType {
         COMMAND_TYPE.put("help", HELP);
         COMMAND_TYPE.put("h", HELP);
         COMMAND_TYPE.put("exit", EXIT);
-        COMMAND_TYPE.put("e", EXIT);
+        COMMAND_TYPE.put("quit", EXIT);
+        COMMAND_TYPE.put("q", EXIT);
+        COMMAND_TYPE.put("find", FIND);
+        COMMAND_TYPE.put("f", FIND);
     }
 
     public static CommandType fromString(String commandString) {
