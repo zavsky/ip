@@ -2,6 +2,11 @@ package bluebird.commands;
 
 import bluebird.TaskManager;
 
+/**
+ * Represents a command to display the saved tasks to the user.
+ *
+ * @see Command
+ */
 public class ListCommand extends Command {
     private final TaskManager taskManager;
 
@@ -10,8 +15,13 @@ public class ListCommand extends Command {
     }
 
     /**
-     * Adds String-formatted task list to @attribute commandFeedback.
-     * @return false to signal that the program should not end.
+     * Executes the List command by displaying the tasks string stored in {@code commandFeedback}.
+     * <p>
+     * This method adds a string-formatted task list to {@code commandFeedback} and always returns {@code false}
+     * to indicate that the program should continue running.
+     * </p>
+     *
+     * @return {@code false} to signal that the program should not end
      */
     @Override
     public boolean execute() {

@@ -10,12 +10,34 @@ import bluebird.commands.*;
 import bluebird.commands.taskcommands.*;
 import bluebird.tasks.TaskType;
 
+/**
+ * Parses user input into executable commands.
+ * <p>
+ * This class is responsible for interpreting user input and converting it into
+ * appropriate command objects. It uses a map of command parsers to handle
+ * different types of commands (e.g., add, mark, delete).
+ * </p>
+ * <p>
+ * The parser supports commands such as adding tasks, marking tasks as done or not done,
+ * deleting tasks, and displaying help or exit messages.
+ * </p>
+ *
+ * @see Command
+ * @see TaskManager
+ * @see UIHandler
+ */
 public class CommandParser {
     private final TaskManager taskManager;
     private final UIHandler ui;
 
+    /**
+     * A map that associates each command type with its corresponding parser function.
+     * <p>
+     * The parser function takes a string of arguments and returns a {@link Command} object.
+     * </p>
+     */
     private final Map<CommandType, Function<String, Command>> commandParsers = new HashMap<>();
-    
+
     public CommandParser(TaskManager taskManager, UIHandler ui) {
         this.taskManager = taskManager;
         this.ui = ui;
@@ -31,6 +53,20 @@ public class CommandParser {
         commandParsers.put(CommandType.FIND, this::parseFindCommand);
     }
     
+    /**
+     * Parses the user input and returns the corresponding command.
+     * <p>
+     * The input string is split into a command and its arguments. The command is then
+     * mapped to a parser function, which is used to create the appropriate command object.
+     * </p>
+     * <p>
+     * If the command is not recognized, a help message is displayed, and a {@link HelpCommand}
+     * is returned.
+     * </p>
+     *
+     * @param input the user input to parse
+     * @return the parsed command, or a {@link HelpCommand} if the input is invalid
+     */
     public Command parseInput(String input) {
         String[] parts = input.split(" ", 2);
         String commandString = parts[0].toLowerCase();
@@ -58,6 +94,16 @@ public class CommandParser {
         return new FindCommand(taskManager, key);
     }
     
+    /**
+     * Parses the arguments for an "add" command and returns the corresponding {@link AddCommand}.
+     * <p>
+     * The arguments are validated to ensure they contain a valid task type and description.
+     * If the arguments are incomplete, the user is prompted to provide the missing details.
+     * </p>
+     *
+     * @param arguments the arguments for the "add" command
+     * @return the parsed {@link AddCommand}, or {@code null} if the arguments are invalid
+     */
     private Command parseAddCommand(String arguments) {
         String[] parts = getValidTaskTypeAndDetails(arguments, "Add event, deadline or todo? ");
         if (parts == null) {
@@ -74,6 +120,16 @@ public class CommandParser {
         return new AddCommand(taskManager, taskType, details);
     }
 
+    /**
+     * Validates the task type and details provided in the input.
+     * <p>
+     * If the task type is invalid, the user is prompted to provide a valid task type.
+     * </p>
+     *
+     * @param input the input string containing the task type and details
+     * @param prompt the prompt to display if the task type is invalid
+     * @return an array containing the task type and details, or {@code null} if the input is invalid
+     */
     private String[] getValidTaskTypeAndDetails(String input, String prompt) {
         String[] parts = input.split(" ", 2);
         String taskType = parts[0].toLowerCase();
@@ -90,6 +146,17 @@ public class CommandParser {
         return parts;
     }
 
+    /**
+     * Parses the arguments for a "mark" or "unmark" command and returns the corresponding command.
+     * <p>
+     * The arguments are validated to ensure they contain valid task indices. If the arguments
+     * are incomplete, the user is prompted to provide the missing indices.
+     * </p>
+     *
+     * @param arguments the arguments for the "mark" or "unmark" command
+     * @param markAsDone {@code true} to mark tasks as done, {@code false} to mark them as not done
+     * @return the parsed {@link MarkCommand} or {@link UnmarkCommand}, or {@code null} if the arguments are invalid
+     */
     private Command parseMarkCommand(String arguments, boolean markAsDone) {
         if (taskManager.isEmpty()) {
             return null;
@@ -114,6 +181,16 @@ public class CommandParser {
         return new MarkCommand(taskManager, taskIndices, markAsDone);
     }
 
+    /**
+     * Parses the arguments for a "delete" command and returns the corresponding {@link DeleteCommand}.
+     * <p>
+     * The arguments are validated to ensure they contain valid task indices. If the arguments
+     * are incomplete, the user is prompted to provide the missing indices.
+     * </p>
+     *
+     * @param arguments the arguments for the "delete" command
+     * @return the parsed {@link DeleteCommand}, or {@code null} if the arguments are invalid
+     */
     private Command parseDeleteCommand(String arguments) {
         if (taskManager.isEmpty()) {
             return null;
@@ -141,7 +218,14 @@ public class CommandParser {
 
     /**
      * Parses a string of space-separated integers into an array of integers.
-     * Returns null if any part of the input is invalid.
+     * <p>
+     * The input string is split into individual parts, and each part is converted to an integer.
+     * The indices are validated to ensure they are non-negative and within the range of the task list.
+     * Duplicate indices are removed.
+     * </p>
+     *
+     * @param input the input string containing space-separated integers
+     * @return an array of valid task indices, or {@code null} if the input is invalid
      */
     private int[] parseTaskIndices(String input) {
         String[] parts = input.split("\\s+"); // Split by spaces
@@ -167,6 +251,16 @@ public class CommandParser {
         }
     }
 
+    /**
+     * Removes duplicate values from an array of integers.
+     * <p>
+     * The array is sorted, and duplicate values are removed. The resulting array
+     * contains only unique values in ascending order.
+     * </p>
+     *
+     * @param a the array of integers
+     * @return a new array containing only unique values
+     */
     private static int[] removeDuplicateFromArray(int[] a) {
         Arrays.sort(a);
         int aLen = a.length;

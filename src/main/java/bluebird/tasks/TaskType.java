@@ -19,6 +19,13 @@ public enum TaskType {
         TASK_TYPES.put("t", TODO);
     }
 
+    /**
+     * Compares a String variable with the pre-assigned task type keywords
+     * and returns the matching TaskType element. Returns null otherwise.
+     * 
+     * @param taskType a user-specified String to map a task type to
+     * @return a TaskType element
+     */
     public static TaskType fromString(String taskType) {
         return TASK_TYPES.get(taskType.toLowerCase());
     }
