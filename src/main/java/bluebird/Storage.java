@@ -7,6 +7,10 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
+/**
+ * Responsible for checking the existance of the save file, loading the save file 
+ * into the application upon startup and saving the user-generated tasks when requested.
+ */
 public class Storage {
     private static final String FILE_PATH = "./task.txt";
 

@@ -7,12 +7,22 @@ import java.util.function.Function;
 import bluebird.exceptions.IllegalTaskParameterException;
 import bluebird.tasks.*;
 
+/**
+ * Handles the creation of Tasks from user input. Creates the appropriate Task type 
+ * and prompts the user for more details if insufficient was provided.
+ */
 public class TaskFactory {
     private static UIHandler ui;
     private static final String REGEX_DEADLINE_STRING = "/by|/b";
     private static final String REGEX_EVENT_STRING = "((?=/from)|(?=/f)|(?=/to)|(?=/t))";
     private static final String REGEX_EVENT_NODELIM_STRING = "/from|/f|/to|/t";
 
+    /**
+     * A map that associates each task type with its corresponding create function.
+     * <p>
+     * The create function takes a string of arguments and returns a {@link Task} object.
+     * </p>
+     */
     private static final Map<TaskType, Function<String, Task>> createTaskMap = new HashMap<>();
 
     static {
@@ -25,6 +35,14 @@ public class TaskFactory {
         TaskFactory.ui = ui;
     }
 
+    /**
+     * Takes the user-specified task type and calls its appropriate create function with 
+     * the necessary arguments.
+     * 
+     * @param taskType user-specified task type
+     * @param details task details such as description or due date
+     * @return a Task object
+     */
     public static Task createTask (String taskType, String details) {
         Function<String, Task> creator = createTaskMap.get(TaskType.fromString(taskType.toLowerCase()));
         if (creator == null) {
@@ -41,10 +59,12 @@ public class TaskFactory {
     }
 
     /**
+     * Creates a deadline Task. Returns a null object if the end date is not specified even 
+     * after user prompting.
      * 
-     * @param details must not be empty or null String
-     * @return
-     * @throws IllegalTaskParameterException
+     * @param details String containing the description and end date for the event. Must not 
+     * be empty
+     * @return a Deadline object
      */
     private static Deadline createDeadline(String details) {
         String[] parts = details.split(REGEX_DEADLINE_STRING, 2);
@@ -62,6 +82,13 @@ public class TaskFactory {
         return new Deadline(description, by);
     }
 
+    /**
+     * Creates an event Task. Returns a null object if either the start or end date is not 
+     * specified even after user prompting.
+     * 
+     * @param details description, start and end date for the event. Must not be empty
+     * @return an Event object
+     */
     private static Event createEvent(String details) {
         String[] parts = details.split(REGEX_EVENT_STRING, 3);
         String from = "", to = "";
@@ -98,6 +125,13 @@ public class TaskFactory {
         return new Event(description, from, to);
     }
 
+    /**
+     * Parses a singular line from a save file and converts the stored details to be 
+     * back into Task objects.
+     * 
+     * @param fileString String stream from the save file
+     * @return a Task object
+     */
     public static Task createTaskFromFileString(String fileString) {
         String[] parts = fileString.split(" \\| ");
         if (parts.length < 3) {

@@ -1,5 +1,8 @@
 package bluebird.tasks;
 
+/**
+ * Represents a Task with a defined end date/time.
+ */
 public class Deadline extends Task {
     private String by;
 

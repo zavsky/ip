@@ -5,6 +5,12 @@ import bluebird.commands.EmptyCommand;
 import bluebird.commands.HelpCommand;
 import bluebird.commands.ListCommand;
 
+/**
+ * Starting point of the Bluebird application. Runs in a loop calling for user input, 
+ * parses them and updates the task list appropriately. It prints a summary of its 
+ * activity and informs the user if the action was successful. Quits upon capturing 
+ * the user-specified exit command.
+ */
 public class Main {
     public static void main (String[] args) {
         TaskManager taskManager = new TaskManager();

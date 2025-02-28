@@ -2,6 +2,10 @@ package bluebird;
 
 import java.security.SecureRandom;
 
+/**
+ * Serves as a lookup for Bluebird's speech with formatting to 
+ * align with the general UI
+ */
 public class Bluebird {
     private static final SecureRandom random = new SecureRandom();
     
@@ -33,9 +37,14 @@ public class Bluebird {
     }
 
     /**
+     * Randomly picks an element from the supplied enum class and 
+     * returns a value in the enum-class type
+     * <p>
      * Taken from stackoverflow.com/questions/1972392/pick-a-random-value-from-an-enum
      * from users Eldelshell and zuddduz.
-     * @return
+     * </p>
+     * @param clazz an enum class
+     * @return a random member of the enum
      */
     public static <T extends Enum<?>> T randomEnum(Class<T> clazz) {
         int x = random.nextInt(clazz.getEnumConstants().length);

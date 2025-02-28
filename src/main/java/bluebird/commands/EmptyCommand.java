@@ -1,5 +1,12 @@
 package bluebird.commands;
 
-public class EmptyCommand extends Command {
-    // Used when user acknowledges cancelling of command
-}
+/**
+ * Represents a command that does not do anything.
+ * <p>
+ * Useful in scenarios where users acknowledge the cancelling of a 
+ * previously-issued command.
+ * </p>
+ *
+ * @see Command
+ */
+public class EmptyCommand extends Command {}

@@ -6,12 +6,23 @@ import java.util.function.Function;
 
 import bluebird.tasks.Task;
 
+/**
+ * Handles all modifications to the task list during runtime. Handles all requests for tasks data 
+ * made by other classes.
+ */
 public class TaskManager {
     private final ArrayList<Task> tasks = new ArrayList<>();
     private final Storage storage = new Storage();
     private Task[] lastModifiedTasks = null;
     private CommandType undoCommand = null;
 
+    /**
+     * A map that associates each command type with its corresponding task modification function.
+     * <p>
+     * The task modification function takes an array of Tasks and returns a String to indicate the 
+     * activity back to the user.
+     * </p>
+     */
     private final Map<CommandType, Function<Task[], String>> undoActions = Map.of(
         CommandType.ADD, this::addTask,
         CommandType.MARK, tasks -> markTask(true, tasks),
@@ -103,19 +114,6 @@ public class TaskManager {
 
         return undoActions.getOrDefault(undoCommand, tasks -> "What am I doing here??? Check my code...")
               .apply(lastModifiedTasks);
-
-        // switch (undoCommand) {
-        // case ADD:
-        //     return addTask(lastModifiedTasks);
-        // case MARK:
-        //     return markTask(true, lastModifiedTasks);
-        // case UNMARK:
-        //     return markTask(false, lastModifiedTasks);
-        // case DELETE:
-        //     return deleteTask(lastModifiedTasks);
-        // default:
-        //     return "What am I doing here??? Check my code...";
-        // }
     }
 
     private void loadTasks() {
@@ -166,8 +164,4 @@ public class TaskManager {
     public boolean isEmpty() {
         return tasks.size() == 0;
     }
-
-    // private int[] getIndices(Task[] tasks) {
-    //     return Arrays.stream(tasks).mapToInt(this.tasks::indexOf).toArray();
-    // }
 }
