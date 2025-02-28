@@ -3,6 +3,10 @@ package bluebird;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Represents the categories of commands available to the user 
+ * for classifying parsed user-specified inputs.
+ */
 public enum CommandType {
     LIST, 
     ADD,
@@ -20,7 +24,8 @@ public enum CommandType {
         COMMAND_TYPE.put("list", LIST);
         COMMAND_TYPE.put("l", LIST);
         COMMAND_TYPE.put("add", ADD);
-        COMMAND_TYPE.put("a", ADD);
+        COMMAND_TYPE.put("create", ADD);
+        COMMAND_TYPE.put("c", ADD);
         COMMAND_TYPE.put("mark", MARK);
         COMMAND_TYPE.put("m", MARK);
         COMMAND_TYPE.put("unmark", UNMARK);
@@ -35,6 +40,13 @@ public enum CommandType {
         COMMAND_TYPE.put("e", EXIT);
     }
 
+    /**
+     * Compares a String variable against the pre-assigned list of known commands 
+     * and returns the matching CommandType element.
+     * 
+     * @param commandString a user-specified String to match against
+     * @return a CommandType element
+     */
     public static CommandType fromString(String commandString) {
         return COMMAND_TYPE.getOrDefault(commandString.toLowerCase(), UNKNOWN);
     }

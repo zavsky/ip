@@ -1,5 +1,8 @@
 package bluebird.tasks;
 
+/**
+ * Represents a Task that the user needs to complete.
+ */
 public class ToDo extends Task {
 
     public ToDo(String description) {

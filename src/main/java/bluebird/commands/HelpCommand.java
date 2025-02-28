@@ -5,7 +5,19 @@ import java.util.Map;
 
 import bluebird.CommandType;
 
+/**
+ * Represents a command to display help information to the user.
+ * <p>
+ * The general help message includes all available commands and their syntax.
+ * The specific hint provides a concise example for a single command type.
+ * </p>
+ *
+ * @see Command
+ */
 public class HelpCommand extends Command {
+    /**
+     * A map that associates each command type with its usage example.
+     */
     private static final Map<CommandType, String> commandExample = new HashMap<>();
 
     static {
@@ -15,6 +27,12 @@ public class HelpCommand extends Command {
         commandExample.put(CommandType.DELETE, "delete task_index [task_indices ...]");
     }
 
+    /**
+     * Constructs a {@code HelpCommand} that displays a general help message.
+     * <p>
+     * The general help message includes all available commands and their syntax.
+     * </p>
+     */
     public HelpCommand() {
         commandFeedback = "Available commands:\n" +
             "\tlist, l      - List all tasks\n" +
@@ -31,13 +49,24 @@ public class HelpCommand extends Command {
             "\t    todo       task_description";
     }
 
-    public HelpCommand(CommandList commandList) {
+    /**
+     * Constructs a {@code HelpCommand} that displays a specific hint for a given command type.
+     *
+     * @param commandList the command type for which to display the hint
+     * @see CommandType
+     */
+    public HelpCommand(CommandType commandList) {
         commandFeedback = "Hint: " + commandExample.get(commandList);
     }
 
     /**
-     * Writes a help string to @attribute commandFeedback.
-     * @return false to signal that the program should not end.
+     * Executes the help command by displaying the help message stored in {@code commandFeedback}.
+     * <p>
+     * This method does not perform any additional actions and always returns {@code false}
+     * to indicate that the program should continue running.
+     * </p>
+     *
+     * @return {@code false} to signal that the program should not end
      */
     @Override
     public boolean execute() {

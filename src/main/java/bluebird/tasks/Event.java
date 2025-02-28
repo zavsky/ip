@@ -1,5 +1,8 @@
 package bluebird.tasks;
 
+/**
+ * Represents a Task with a defined start and end date/time.
+ */
 public class Event extends Task {
     private String from;
     private String to;
