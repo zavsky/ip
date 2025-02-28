@@ -60,7 +60,7 @@ public class UIHandler {
     }
 
     private static void printLine() {
-        System.out.println("\t::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::" + 
+        System.out.println("\t:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::" + 
             System.lineSeparator());
     }
 
