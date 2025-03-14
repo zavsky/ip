@@ -1,6 +1,8 @@
 # Bluebird User Guide
 
-// Product screenshot goes here
+![alt text][logo]
+
+[logo]: https://github.com/zavsky/ip/raw/master/docs/icon.png "product logo"
 
 Roses are red, violets are blue
 I've spent too much time, and so did you too
