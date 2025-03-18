@@ -14,7 +14,7 @@ In all seriousness, it aims to organise and collect all your outstanding tasks, 
 
 ## Adding Tasks
 
-Creation of a new task begins with the command `add` (or `a` for short). If no parameters are specified, the follow-up prompts will guide you to furnish the required (but arduous) information. A necessary evil.
+Creation of a new task begins with the command `create` (or `c` for short). If no parameters are specified, the follow-up prompts will guide you to furnish the required (but arduous) information. A necessary evil.
 
 ### Add Todos
 
