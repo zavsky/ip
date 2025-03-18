@@ -20,25 +20,25 @@ Creation of a new task begins with the command `add` (or `a` for short). If no p
 
 Todos are tasks without a specific date or time attached. Append the `add` command with `todo`/`t` or string them together to reduce keystrokes. Similarly, you may string the task description behind to create a todo in one command. Easy.
 
-Syntax: `add todo [task_description]`
+Syntax: `create todo [task_description]`
 
-Example: `a t read the room`
+Example: `c t read the room`
 
 ### Add Deadlines
 
 Deadlines attach a date to the created event. Type either `deadline` or `d` to specify this option. Optionally, include the task description and end date in a single line with the keyword `/by` or `/b` as a delimiter between the date and description.
 
-Syntax: `add deadline [event_or_task_name] [/by end_date]`
+Syntax: `create deadline [event_or_task_name] [/by end_date]`
 
-Example: `a d fix the leak /b end of the week`
+Example: `c d fix the leak /b end of the week`
 
 ### Add Events
 
 Events include a start and end time. The `event` or `e` option selects this task type. Task description follows the option with keywords `from`/`f` and `to`/`t` to separate the start and end time respectively. The order of the last two flags is interchangeable.
 
-Syntax: `add event [event_name] [/from start_time] [/to end_time]`
+Syntax: `create event [event_name] [/from start_time] [/to end_time]`
 
-Example: `a e fart concerto /f wed 5pm /to 8pm`
+Example: `c e fart concerto /f wed 5pm /to 8pm`
 
 #### Note: leaving blanks
 
@@ -88,7 +88,7 @@ Need help? All these syntax examples are accessible via the `help` keyword. You 
 
 ## Exiting the program
 
-After a long day and the list has piled up, simply type `exit` to quit the program. No, you shall not shorthand with `e`, which will force quit all your unsaved apps. Just kidding.
+After a long day and the list has piled up, simply type `quit` to quit the program. No, you shall not shorthand with `q`, which will force quit all your unsaved apps. Just kidding.
 
 
 ## Future improvements
